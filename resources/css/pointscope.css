@@ -1,0 +1,117 @@
+html, body {
+	font-family: 'Ubuntu Mono';
+	height: 100% !important;
+}
+
+#header {
+	height: 120px;
+	width: 100%;
+	padding: 10px 0px 15px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#empty {
+	position: absolute;
+	z-index: 2 !important;
+	float: left;
+	height: 100%;
+	width: 70%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	overflow-y:hidden !important;			
+}
+
+#colorbar {
+	position: absolute;
+	z-index: 1 !important;
+	height: 100%;
+	width: 70%;
+	/*height: 290px;*/
+	/*width: 350px;*/
+	/*bottom: 10px;*/
+	/*right: 40px;*/
+
+}
+
+#cv {
+	position:absolute;
+	bottom: 10px;
+	right: 40px;
+	z-index: 1 !important;
+}
+
+#container {
+	position: absolute;
+	z-index: 0 !important;
+	background-color: #000000;
+	color: #000000;
+	float: left;
+	height: 100%;
+	width: 70%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	overflow-y:hidden !important;
+}
+
+#panel_right {
+	z-index: 2 !important;
+	background-color: #FFFFFF;;
+	text-align:left;
+	font-size:14px;
+	color: #000000;
+	height: 100%;
+	width: 30%;
+	float: right;
+	padding: 10px 10px 15px 10px;
+	margin: 0px 0px 0px 0px;
+	/*overflow: hidden !important;*/
+	overflow-y: scroll;
+}
+
+#map {
+	height: 400px !important;
+	width: 100% !important;
+}
+
+#progress_bar {
+	margin: 10px 0;
+	padding: 3px;
+	border: 1px solid #000;
+	font-size: 14px;
+	clear: both;
+	opacity: 0;
+	-moz-transition: opacity 1s linear;
+	-o-transition: opacity 1s linear;
+	-webkit-transition: opacity 1s linear;
+}
+  
+#progress_bar.loading {
+	opacity: 1.0;
+}
+
+#progress_bar .percent {
+	background-color: #99ccff;
+	height: auto;
+	width: 0;
+}
+
+
+#table {
+	font-size:12px;
+	margin: 0px 0px 0px 0px;
+	vertical-align: top;
+	padding: 5px;
+	line-height: 1.42857143;
+	border-spacing: 0px;
+}
+
+#tr {
+	border-bottom: 1px solid #ddd !important;
+	border-top: 1px solid #ddd !important;
+	border-collapse: collapse;
+}
+
+#td {
+	display: table-cell;
+	font-size:12px;
+}
