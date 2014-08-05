@@ -416,6 +416,7 @@ function onWindowResize() {
 	camera.updateProjectionMatrix();
 	renderer.setSize( document.getElementById("container").offsetWidth, window.innerHeight );
 	//controls.handleResize();
+		
 	render();
 
 }
@@ -715,12 +716,13 @@ function animate() {
 	var dt = clock.getDelta();
 	controls.update(dt);
 	renderer.render(scene,camera);
+
 	requestAnimationFrame(animate);
 
 }
 
 function render() {
-
+	
 	renderer.render( scene, camera );
 
 }
