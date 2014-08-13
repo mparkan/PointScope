@@ -363,7 +363,7 @@ function readLAS(e) {
 		dv3.setInt32(writeOffsetInt32, view.getInt32(current_offset + 8, true), true); // Z, long, 4 bytes, *
 		dv4.setUint16(writeOffsetUint16, view.getUint16(current_offset + 12, true), true); // Intensity, unsigned short, 2 bytes
 		dv5.setUint8(writeOffsetUint8, view.getUint8(current_offset + 14), true); // Sub byte fields, 1 byte
-		dv6.setUint8(writeOffsetUint8, view.getUint8(current_offset + 15), true); // Classification, unsigned char, 1 byte, *
+		dv6.setUint8(writeOffsetUint8, view.getUint8(current_offset + 15), true); // Classification number (0-31), unsigned char, 1 byte, *
 		dv7.setUint8(writeOffsetUint8, view.getUint8(current_offset + 16), true); // Scan Angle Rank (-90 to +90) – Left side, char, 1 byte, *
 		dv8.setUint8(writeOffsetUint8, view.getUint8(current_offset + 17), true); // User Data, unsigned char, 1 byte 
 		dv9.setUint16(writeOffsetUint16, view.getUint16(current_offset + 18, true), true); // Point Source ID, unsigned short, 2 bytes, *
@@ -373,10 +373,10 @@ function readLAS(e) {
 		view.getUint16(current_offset + 12, true) > maxVal ? maxVal = view.getUint16(current_offset + 12, true) : null;
 		
 		// find unique classification values
-		if (!(a.indexOf(view.getUint8(current_offset + 15)) > -1)) {
+		if (!(a.indexOf(view.getUint8(current_offset + 15, true) & 31) > -1)) {
 		
-			a.push(view.getUint8(current_offset + 15));
-			
+			a.push(view.getUint8(current_offset + 15, true) & 31); // read bits 0-4 only
+
 		}
 		
 		writeOffsetInt32 += 4;

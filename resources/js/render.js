@@ -363,9 +363,11 @@ function init(pointCollection) {
 		'RGB' : {'colormapName' : 'none', 'discrete' : false, 'nColors' : 256 , 'valueRange' : undefined, 'legendText' : undefined},
 		'Elevation' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [pointCollection.computedMetadata['Z min'], pointCollection.computedMetadata['Z max']], 'legendText' : undefined},
 		'Intensity' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [pointCollection.computedMetadata['Intensity min'], pointCollection.computedMetadata['Intensity max']], 'legendText' : undefined},
-		'Classification' : {'colormapName' : 'classification', 'discrete' : true, 'nColors' : pointCollection.computedMetadata['Unique classes'].length, 'valueRange' : pointCollection.computedMetadata['Unique classes'], 'legendText' : undefined},
-		'ReturnNumber' : {'colormapName' : 'eight', 'discrete' : true, 'nColors' : 8, 'valueRange' : [0, 1, 2, 3, 4, 5, 6, 7], 'legendText' : {'1' : '1', '2' : '2', '3' : '3', '4' : '4', '5' : '5', '6' : '6', '7' : '7', '8' : '8'}},
-		'FlightLineEdge' : {'colormapName' : 'bin', 'discrete' : true, 'nColors' : 2, 'valueRange' : [0, 1], 'legendText' : {'0' : 'inner flightline', '1' : 'flightline edge'}},
+		'Classification' : {'colormapName' : 'classification', 'discrete' : true, 'nColors' : pointCollection.computedMetadata['Unique classes'].length, 'valueRange' : pointCollection.computedMetadata['Unique classes'], 'legendText' : 
+		{'0' : '0', '1' : '1', '2' : '2', '3' : '3', '4' : '4', '5' : '5', '6' : '6', '7' : '7', '8' : '8', '9' : '9', '10' : '10', '11' : '11', '12' : '12', '13' : '13', '14' : '14', '15' : '15', '16' : '16', 
+		'17' : '17', '18' : '18', '19' : '19', '20' : '20', '21' : '21', '22' : '22', '23' : '23', '24' : '24', '25' : '25', '26' : '26', '27' : '27', '28' : '28', '29' : '29', '30' : '30', '31' : '31'}},
+		'ReturnNumber' : {'colormapName' : 'five', 'discrete' : true, 'nColors' : 5, 'valueRange' : [0, 1, 2, 3, 4], 'legendText' : {'0' : '1', '1' : '2', '2' : '3', '3' : '4', '4' : '5'}},
+		'FlightLineEdge' : {'colormapName' : 'bin', 'discrete' : true, 'nColors' : 2, 'valueRange' : [0, 1], 'legendText' : {'0' : 'inner', '1' : 'edge'}},
 		'None' : {'colormapName' : 'none', 'discrete' : true, 'nColors' : 2, 'valueRange' : undefined, 'legendText' : undefined}
 
 	}
@@ -385,13 +387,13 @@ function init(pointCollection) {
 		
 	);
 	
-	boxHelper = new THREE.BoxHelper( bounding_box_mesh ); //0x00ffff , 0x00FF00
+	boxHelper = new THREE.BoxHelper( bounding_box_mesh );
 	document.getElementById('bbox_display').checked ? scene.add(boxHelper) : scene.remove(boxHelper); // toggle bounding box display
 	
 	// add axis
 	console.log('boundingBoxSize')
 	console.log(boundingBoxSize.toArray())
-	console.log(Math.max(boundingBoxSize.x, boundingBoxSize.y, boundingBoxSize.z)) //Math.max(boundingBoxSize.toArray())
+	console.log(Math.max(boundingBoxSize.x, boundingBoxSize.y, boundingBoxSize.z))
 	axes = new THREE.AxisHelper(Math.max(boundingBoxSize.x, boundingBoxSize.y, boundingBoxSize.z));
 	document.getElementById('axis_display').checked ? scene.add(axes) : scene.remove(axes);
 	
@@ -509,12 +511,12 @@ function updatePointColors(renderOn){
 	case 'Classification':
 		console.log('Classification');
 		var colormapName = 'classification';
-		var valueRange = [0, 30];
+		var valueRange = [0, 31];
 		var legendText = {};
 		writeOffsetUint8 = 0;
 		k = 0;
 		for ( var i = 0; i < num_particles-2; i++ ) {
-			var currentColor = colormap[colormapName][dv6.getUint8(writeOffsetUint8, true) & 15];
+			var currentColor = colormap[colormapName][dv6.getUint8(writeOffsetUint8, true) & 31];
 			colors[k]     = currentColor[0]; 
 			colors[k + 1] = currentColor[1];
 			colors[k + 2] = currentColor[2];
@@ -558,12 +560,12 @@ function updatePointColors(renderOn){
 		break;
 	case 'ReturnNumber':
 		console.log('ReturnNumber');
-		var colormapName = 'eight';
-		var valueRange = [1 , 8];
+		var colormapName = 'five';
+		var valueRange = [1 , 5];
 		writeOffsetUint8 = 0;
 		k = 0;
 		for ( var i = 0; i < num_particles; i++ ) {
-			var currentColor = colormap[colormapName][dv5.getUint8(writeOffsetUint8, true) & 7]; // Return Number, 3 bits (bits 0, 1, 2), 3 bits, * 
+			var currentColor = colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) & 7)-1]; // Return Number, 3 bits (bits 0, 1, 2), 3 bits, * 
 			colors[k]     = currentColor[0]; 
 			colors[k + 1] = currentColor[1];
 			colors[k + 2] = currentColor[2];
@@ -594,9 +596,9 @@ function updatePointColors(renderOn){
 		var legendText = [];
 		k = 0;
 		for ( var i = 0; i < num_particles; i++ ) {
-			colors[k]     = 1; //0.5294; 
-			colors[k + 1] = 1; //0.8078;
-			colors[k + 2] = 1; //0.9804;
+			colors[k]     = 1;
+			colors[k + 1] = 1;
+			colors[k + 2] = 1;
 			k += 3;	
 		}
 		break;
@@ -635,9 +637,32 @@ function updateColorbar(colorPointsBy) {
 			break;
 		default:
 			var ncolors = displayInfo[colorPointsBy].nColors;
-			var stepWidth = 256 / ncolors;
 			
-			document.getElementById('colorbar').innerHTML = '<canvas width="350px" height="290px" id="cv"></canvas>';
+			
+			if (ncolors <= 2) {
+				var colorbarHeight = 140;
+			}
+			
+			if (ncolors > 2 && ncolors <= 8) {
+				var colorbarHeight = 250;
+			}
+			
+			if (ncolors > 8 && ncolors <= 15) {
+				var colorbarHeight = 290;
+			}
+			
+			if (ncolors > 18 && ncolors <= 31) {
+				var colorbarHeight = 450;
+			}
+			
+			if (ncolors > 31) {
+				var colorbarHeight = 286;
+			}
+			
+			var stepWidth = (colorbarHeight-30) / ncolors;
+			
+			
+			document.getElementById('colorbar').innerHTML = '<canvas width="350px" height="' + colorbarHeight + 'px" id="cv"></canvas>';
 
 			var cv  = document.getElementById('cv')
 			var	ctx = cv.getContext('2d');
@@ -645,6 +670,7 @@ function updateColorbar(colorPointsBy) {
 			console.log('colormap[ColormapName]');
 			console.log(colormap[colormapName]);
 			
+			// fill rectangles
 			var offset = 15;
 			for (var i = 0; i < ncolors; i++) {
 
@@ -656,7 +682,7 @@ function updateColorbar(colorPointsBy) {
 				ctx.fillRect(315, offset + i * stepWidth, 35, stepWidth);
 			}
 			
-			// add legend
+			// add text legend
 			ctx.font = "13px sans-serif";
 			ctx.fillStyle = "#FFFFFF";
 			ctx.textAlign = "end";
@@ -668,8 +694,8 @@ function updateColorbar(colorPointsBy) {
 			
 			if (!(displayInfo[colorPointsBy].discrete)) {
 			
-				tickStep = 256 / 6;
-				valueStep = (valueRange[1] - valueRange[0]) / 7;
+				tickStep = (colorbarHeight-30) / 6;
+				valueStep = (valueRange[1] - valueRange[0]) / 7; // write seven ticks
 				for (var i = 0; i < 7; i++) {
 
 					var val = (valueRange[1] - i * valueStep);
@@ -688,9 +714,14 @@ function updateColorbar(colorPointsBy) {
 			} else {
 				for (var i = 0; i < ncolors; i++) {
 				
-					var val = displayInfo[colorPointsBy].valueRange[i];
-					ctx.fillText(val.toFixed(0), 308, offset + (i + 0.5) * stepWidth);
-				
+					//var val = displayInfo[colorPointsBy].valueRange[i];
+					//ctx.fillText(val.toFixed(0), 308, offset + (i + 0.5) * stepWidth);
+					
+					//var val = 
+					
+					console.log(displayInfo[colorPointsBy].legendText[i]);
+					ctx.fillText(displayInfo[colorPointsBy].legendText[i], 308, offset + (i + 0.5) * stepWidth);
+					
 				}
 			}
 		break;

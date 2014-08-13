@@ -565,6 +565,82 @@ toggle colorbar
 		<script>
 		
 		
+		var url = "http://spatialreference.org/ref/epsg/21781/ogcwkt/";
+		
+		var invocation = new XMLHttpRequest();
+		//var url = 'http://bar.other/resources/public-data/';
+   
+		function callOtherDomain() {
+		  if(invocation) {    
+			invocation.open('GET', url, true);
+			invocation.onreadystatechange = handler;
+			invocation.send(); 
+		  }
+		}
+		
+		invocation.onload = function() {
+		 var responseText = xhr.responseText;
+		 console.log(responseText);
+		 // process the response.
+		};
+
+		//"http://www.datasciencetoolkit.org/coordinates2statistics/12%2c13?statistics=elevation&callback"; //
+		
+		/*
+		$(document).ready(function() {
+			$.get(HTML_FILE_URL, function(data) {
+				var fileDom = $(data);
+				console.log('fileDom');
+				console.log(fileDom);
+			}, "text");
+		})*/;
+		
+
+		
+		/*
+		function getOGCWKTproj(callback){
+			$.ajax({
+				url: HTML_FILE_URL,
+				dataType: 'jsonp', 
+				success: callback, 
+			}); 
+		}
+		
+		getOGCWKTproj(function(json) { 
+			console.log('json');
+			console.log(json);
+			//$('#elevation').html('<b>Approximate elevation ASL: </b>' + elevation);
+		});
+		*/
+		
+		// Using YQL and JSONP
+		/*
+		$.ajax({
+			url: HTML_FILE_URL,
+		 
+			// the name of the callback parameter, as specified by the YQL service
+			jsonp: "callback",
+		 
+			// tell jQuery we're expecting JSONP
+			dataType: "jsonp",
+		 
+			// tell YQL what we want and that we want JSON
+			data: null,
+		 
+			// work with the response
+			success: function( response ) {
+				console.log( response ); // server response
+			}
+		});
+		*/
+
+		/*
+		$.get( HTML_FILE_URL, function( data ) {
+		  $( ".result" ).html( data );
+		  alert( "Load was performed." );
+		});
+		*/
+		
 		$('.panel').on('shown.bs.collapse', function (e) {
 			
 			if (e.currentTarget.id === 'map_panel' && loadMinimap){
