@@ -719,8 +719,8 @@ function updateColorbar(colorPointsBy) {
 					
 					//var val = 
 					
-					console.log(displayInfo[colorPointsBy].legendText[i]);
-					ctx.fillText(displayInfo[colorPointsBy].legendText[i], 308, offset + (i + 0.5) * stepWidth);
+					console.log(displayInfo[colorPointsBy].legendText[valueRange[i]]);
+					ctx.fillText(displayInfo[colorPointsBy].legendText[valueRange[i]], 308, offset + (i + 0.5) * stepWidth);
 					
 				}
 			}
