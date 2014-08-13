@@ -651,11 +651,11 @@ function updateColorbar(colorPointsBy) {
 				var colorbarHeight = 290;
 			}
 			
-			if (ncolors > 18 && ncolors <= 31) {
+			if (ncolors > 18 && ncolors <= 32) {
 				var colorbarHeight = 450;
 			}
 			
-			if (ncolors > 31) {
+			if (ncolors > 32) {
 				var colorbarHeight = 286;
 			}
 			
