@@ -73,7 +73,7 @@ PointScope.PsInterface.PointCollection = function () {
         'Blue' : []
     };
 
-}
+};
 
 /**
  * GeoJSON Object
@@ -98,13 +98,12 @@ PointScope.PsInterface.geoJSON = function (type, crs, features) {
  * @param to destination crs
  */
 PointScope.PsInterface.geoJSON.prototype.reproject = function(from, to) {
-    
-    for (var i = 0; i < this.features.length; i++) {    
-        
+
+    for (var i = 0; i < this.features.length; i++) {
         switch (this.features[i].geometry.type) {
         case "Polygon":
             for (var j = 0; j < this.features[i].geometry.coordinates.length; j++){
-                this.features[i].geometry.coordinates[j] = this.features[i].geometry.coordinates[j].map(function(x) { return proj4(from, to, x); });
+                this.features[i].geometry.coordinates[j] = this.features[i].geometry.coordinates[j].map(function (x) { return proj4(from, to, x); });
             }
             break;
         case "LineString":
@@ -132,7 +131,8 @@ PointScope.PsInterface.handleInput = function (evt) {
     } else {
         Detector.addGetWebGLMessage();
     }
-}
+};
+
 /**
  * method to update progress bar during file loading
  * @param evt event
@@ -142,8 +142,8 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
     // Reset progress indicator on new file selection.
     document.getElementById('progressBar').style.width = '0%';
     document.getElementById('progressBar').innerHTML = '0%';
-        
-    var file = evt.target.files[0]
+
+    var file = evt.target.files[0];
     var sFileName = file.name;
     file.extension = sFileName.split('.')[sFileName.split('.').length - 1].toLowerCase(); // file extension
 
@@ -159,10 +159,10 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
 
     // set progress bar to 0%
     PointScope.PsInterface.reader.onloadstart = function(e) {
-    
-      //document.getElementById('progress_bar').className = 'loading';
-      document.getElementById('progressBar').style.width = '0%';
-      document.getElementById('progressBar').innerHTML = '0%';
+
+    //document.getElementById('progress_bar').className = 'loading';
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('progressBar').innerHTML = '0%';
 
     };
 
@@ -184,51 +184,42 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
 
     PointScope.PsInterface.reader.onload = function(e) {
 
-          document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressBar').style.width = '100%';
         document.getElementById('progressBar').innerHTML = '100%';
-
-        ev = e.target.result;
+        var ev = e.target.result;
 
         switch(file.extension){
-        case 'csv':
-            console.log('file is .csv');
-
-            //pointCollection = readCSV(e); // read data from CSV file
-            //console.log(pointCollection);
+            case 'csv':
+                console.log('file is .csv');
+                break;
+            case 'las':
+                console.log('file is .las');
+                console.log(e);
+                pointCollection = readLAS(e); // read data from LAS file
+                break;
+            default:
+                alert('unsupported file format!');
             break;
-        case 'las':
-            console.log('file is .las');
-            console.log(e);
-            pointCollection = readLAS(e); // read data from LAS file
-
-            //console.log(pointCollection);
-            break;
-        default:
-            alert('unsupported file format!');
-        break;
         }
 
-        console.log('File loaded successfuly')
+        console.log('File loaded successfuly');
 
         if (validFormatFlag) {
 
             // render the point cloud
             init(pointCollection);
             animate();
- 
+
             // update right panel
             PointScope.PsInterface.printMetadata(file, pointCollection);
             PointScope.PsInterface.printDownload();
 
             // update map
-            loadMinimap = true;
-            // printMap()
+            PointScope.PsInterface.loadMinimap = true;
 
         }
-        
-    }
-    
-}
+    };
+};
 
 /**
  * method to abort file loading
@@ -236,7 +227,7 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
  */
 PointScope.PsInterface.abortRead = function() {
     PointScope.PsInterface.reader.abort();
-  }
+};
 
   /**
  * method to handle file reading errors
@@ -255,8 +246,8 @@ PointScope.PsInterface.errorHandler = function(evt){
         break;
       default:
         alert('An error occurred reading this file.');
-    };
-}
+    }
+};
 
 /**
  * method to abort file loading
@@ -268,7 +259,7 @@ PointScope.PsInterface.updateProgress = function(evt) {
 
      //console.log(evt)
       var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      console.log(percentLoaded)
+      console.log(percentLoaded);
       // Increase the progress bar length.
  
       if (percentLoaded <= 100) {
@@ -283,7 +274,7 @@ PointScope.PsInterface.updateProgress = function(evt) {
       }
 
     }
-}
+};
 
 /**
  * method to download output
@@ -310,7 +301,7 @@ PointScope.PsInterface.printDownload = function() {
               '</tr>'+
               '<tr>'+
                 '<td><a href="data:' + "text/json;charset=utf-8," + encodeURIComponent(bbox_local_srs) + '" download="bbox_local_srs.geojson"><b>planimetric bounding box</b></a></td>'+
-                '<td>'+ pointCollection.computedMetadata['SRID'] +'</td>'+
+                '<td>'+ pointCollection.computedMetadata.SRID +'</td>'+
                 '<td>geojson</td>'+
               '</tr>'+
             '</tbody>'+
@@ -319,11 +310,11 @@ PointScope.PsInterface.printDownload = function() {
       } else {
  
         document.getElementById('downloads').innerHTML =
-        '<p><span class="glyphicon glyphicon-warning-sign"></span> no download available (SRS was not defined)</p>'
+        '<p><span class="glyphicon glyphicon-warning-sign"></span> no download available (SRS was not defined)</p>';
 
       }
     
-}
+};
 
 /**
  * method to print map
@@ -334,13 +325,13 @@ PointScope.PsInterface.printMap = function() {
     // check if projection is available
     if (projFlag){
 
-        console.log('projection available')
+        console.log('projection available');
 
         // check if map frame already exists
         // hasLayer( <ILayer> layer )
         if (initMapFlag){
 
-            console.log('reset map')
+            console.log('reset map');
 
             // create bounding box layer
             pc_bbox = L.geoJson(mapBoundingBox, {
@@ -363,8 +354,8 @@ PointScope.PsInterface.printMap = function() {
                             return {
                                 weight: 2,
                                 color: feature.properties.color,
-                                opacity : 1.0,
-                                };
+                                opacity : 1.0
+                            };
                         },
                 onEachFeature: function (feature, layer) {
                     //layer.bindPopup(feature.properties.name);
@@ -372,7 +363,7 @@ PointScope.PsInterface.printMap = function() {
             });
 
             // add OSM baselayer
-            var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
             var osm = new L.TileLayer(osmUrl, {
                 maxZoom: 18,
@@ -394,7 +385,7 @@ PointScope.PsInterface.printMap = function() {
                     position: "bottomleft",
                     maxWidth: 100,
                     metric: true,
-                    imperial: false,
+                    imperial: false
                 }
             ).addTo(mymap);
 
@@ -402,7 +393,7 @@ PointScope.PsInterface.printMap = function() {
             mycontrol = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : pc_bbox, 'XY axis' : pc_axis});
             mymap.addControl(mycontrol);
             
-            initMapFlag = false
+            initMapFlag = false;
 
         }
 
@@ -410,14 +401,14 @@ PointScope.PsInterface.printMap = function() {
 
             mymap.removeLayer(pc_bbox); //remove layer from the map
             pc_bbox.clearLayers(); // clear data from layer
-            console.log('pc_bbox empty')
-            console.log(pc_bbox)
+            console.log('pc_bbox empty');
+            console.log(pc_bbox);
             
             pc_bbox.addData(mapBoundingBox);
             mymap.addLayer(pc_bbox);
-            console.log('pc_bbox')
-            console.log(pc_bbox)
-            console.log('hasLayer(pc_bbox): ' + mymap.hasLayer(pc_bbox))
+            console.log('pc_bbox');
+            console.log(pc_bbox);
+            console.log('hasLayer(pc_bbox): ' + mymap.hasLayer(pc_bbox));
 
         }
 
@@ -425,14 +416,14 @@ PointScope.PsInterface.printMap = function() {
 
             mymap.removeLayer(pc_axis); //remove layer from the map
             pc_axis.clearLayers(); // clear data from layer
-            console.log('pc_axis empty')
-            console.log(pc_axis)
+            console.log('pc_axis empty');
+            console.log(pc_axis);
             
             pc_axis.addData(mapAxis);
             mymap.addLayer(pc_axis);
-            console.log('pc_axis')
-            console.log(pc_axis)
-            console.log('hasLayer(pc_axis): ' + mymap.hasLayer(pc_axis))
+            console.log('pc_axis');
+            console.log(pc_axis);
+            console.log('hasLayer(pc_axis): ' + mymap.hasLayer(pc_axis));
 
         }
 
@@ -448,7 +439,7 @@ PointScope.PsInterface.printMap = function() {
 
     }
 
-}
+};
 
 /**
  * method to print metadata
@@ -466,10 +457,10 @@ PointScope.PsInterface.printMetadata = function(file, pointCollection) {
 
     document.getElementById('metadata_software').innerHTML = pointCollection.publicHeader['Generating Software'];
     
-    document.getElementById('metadata_srid').innerHTML = pointCollection.computedMetadata['SRN'] + ' (' + pointCollection.computedMetadata['SRID'] + ')'; 
-    document.getElementById('metadata_srs').innerHTML = pointCollection.computedMetadata['SRS']
+    document.getElementById('metadata_srid').innerHTML = pointCollection.computedMetadata.SRID + ' (' + pointCollection.computedMetadata.SRID + ')'; 
+    document.getElementById('metadata_srs').innerHTML = pointCollection.computedMetadata.SRID;
 
-}
+};
 
 /**
  * method to find minimum
@@ -483,7 +474,7 @@ PointScope.PsInterface.findMin = function(a) {
     }
     return minVal;
 
-}
+};
 
 /**
  * method to find minimum
@@ -497,7 +488,7 @@ PointScope.PsInterface.findMax = function(a) {
     }
     return maxVal;
 
-}
+};
 
 /**
  * method to sort numeric values
@@ -508,4 +499,4 @@ PointScope.PsInterface.sortNumeric = function(a, b) {
 
     return a - b;
 
-}
+};
