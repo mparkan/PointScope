@@ -9,7 +9,7 @@
 
 // TO DO: convert RGB values to hexadecimal
 
-var colormap = {
+PointScope.Colormaps.colormap = {
 'jet' : [
 	[0.000000, 0.000000, 0.515625],
 	[0.000000, 0.000000, 0.531250],
