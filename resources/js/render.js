@@ -348,7 +348,7 @@ PointScope.PsInterface.init = function (pointCollection) {
     console.log(PointScope.Renderer.geometry.boundingBox);
 
     // set display options
-    displayInfo = {
+    PointScope.Renderer.displayInfo = {
 
         'RGB' : {'colormapName' : 'none', 'discrete' : false, 'nColors' : 256 , 'valueRange' : undefined, 'legendText' : undefined},
         'Elevation' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [pointCollection.computedMetadata['Z min'], pointCollection.computedMetadata['Z max']], 'legendText' : undefined},
@@ -368,38 +368,38 @@ PointScope.PsInterface.init = function (pointCollection) {
 
     console.log('geometry:');
     console.log(PointScope.Renderer.geometry); 
-    
+
     // add the bounding box
     var bounding_box_mesh = new THREE.Mesh(
     
         new THREE.BoxGeometry(boundingBoxSize.x, boundingBoxSize.y, boundingBoxSize.z),  
         new THREE.MeshBasicMaterial({ color : 0xFFFF00})
-        
+
     );
-    
-    boxHelper = new THREE.BoxHelper( bounding_box_mesh );
-    document.getElementById('bbox_display').checked ? PointScope.Renderer.scene.add(boxHelper) : PointScope.Renderer.scene.remove(boxHelper); // toggle bounding box display
-    
+
+    PointScope.Renderer.boxHelper = new THREE.BoxHelper( bounding_box_mesh );
+    document.getElementById('bbox_display').checked ? PointScope.Renderer.scene.add(PointScope.Renderer.boxHelper) : PointScope.Renderer.scene.remove(PointScope.Renderer.boxHelper); // toggle bounding box display
+
     // add axis
     console.log('boundingBoxSize');
     console.log(boundingBoxSize.toArray());
     console.log(Math.max(boundingBoxSize.x, boundingBoxSize.y, boundingBoxSize.z));
-    axes = new THREE.AxisHelper(Math.max(boundingBoxSize.x, boundingBoxSize.y, boundingBoxSize.z));
-    document.getElementById('axis_display').checked ? PointScope.Renderer.scene.add(axes) : PointScope.Renderer.scene.remove(axes);
-    
+    PointScope.Renderer.axes = new THREE.AxisHelper(Math.max(boundingBoxSize.x, boundingBoxSize.y, boundingBoxSize.z));
+    document.getElementById('axis_display').checked ? PointScope.Renderer.scene.add(PointScope.Renderer.axes) : PointScope.Renderer.scene.remove(PointScope.Renderer.axes);
+
     // add clouds to scene
     for (var i = 0; i < PointScope.Renderer.splitCloud; i++) {
 
         PointScope.Renderer.scene.add(PointScope.Renderer.pointCloudArray[i]);
 
     }
-    
+
     window.addEventListener( 'resize', PointScope.Renderer.onWindowResize, false );
-    
+
     // render scene
     PointScope.Renderer.render();
     PointScope.PsInterface.resetFlag = true;
-    
+
 };
 
 PointScope.Renderer.onWindowResize = function() {
@@ -521,7 +521,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             valueRange = [pointCollection.computedMetadata['Z min'], pointCollection.computedMetadata['Z max']];
             legendText = {};
             k = 0;
-            scaled_max = PointScope.Renderer.geometry.boundingBox.max.z - PointScope.Renderer.geometry.boundingBox.min.z;
+            var scaled_max = PointScope.Renderer.geometry.boundingBox.max.z - PointScope.Renderer.geometry.boundingBox.min.z;
             for ( var i = 0; i < PointScope.Renderer.num_particles-2; i++ ) {
                 var currentColor = PointScope.Colormaps.colormap[colormapName][Math.round(255*(PointScope.Renderer.positions[3*i+2] + PointScope.Renderer.geometry.boundingBox.max.z)/scaled_max)];
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
@@ -619,14 +619,14 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
 
 PointScope.Renderer.updateColorbar = function(colorPointsBy) {
     
-    var colormapName = displayInfo[colorPointsBy].colormapName;
-    var valueRange = displayInfo[colorPointsBy].valueRange;
+    var colormapName = PointScope.Renderer.displayInfo[colorPointsBy].colormapName;
+    var valueRange = PointScope.Renderer.displayInfo[colorPointsBy].valueRange;
     
     if (colormapName == 'none'){
 
         document.getElementById('colorbar').innerHTML = ''; // hide colorbar
     } else {
-        var ncolors = displayInfo[colorPointsBy].nColors;
+        var ncolors = PointScope.Renderer.displayInfo[colorPointsBy].nColors;
         if (ncolors <= 2) {
             var colorbarHeight = 140;
         }
@@ -664,7 +664,7 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
 
             ctx.beginPath();
             var currentColor;
-            displayInfo[colorPointsBy].discrete ? currentColor = PointScope.Colormaps.colormap[colormapName][valueRange[i]] : currentColor = PointScope.Colormaps.colormap[colormapName][ncolors-i-1];
+            PointScope.Renderer.displayInfo[colorPointsBy].discrete ? currentColor = PointScope.Colormaps.colormap[colormapName][valueRange[i]] : currentColor = PointScope.Colormaps.colormap[colormapName][ncolors-i-1];
             var color = 'rgb(' + Math.round(currentColor[0]*255) + ', ' + Math.round(currentColor[1]*255) + ', ' + Math.round(currentColor[2]*255) + ')';
             ctx.fillStyle = color;
             ctx.fillRect(315, offset + i * stepWidth, 35, stepWidth);
@@ -680,7 +680,7 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
         ctx.shadowOffsetY = 1;
         ctx.shadowBlur = 0;
         
-        if (!(displayInfo[colorPointsBy].discrete)) {
+        if (!(PointScope.Renderer.displayInfo[colorPointsBy].discrete)) {
         
             tickStep = (colorbarHeight-30) / 6;
             valueStep = (valueRange[1] - valueRange[0]) / 7; // write seven ticks
@@ -701,8 +701,8 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
             }
         } else {
             for (var i = 0; i < ncolors; i++) {
-                console.log(displayInfo[colorPointsBy].legendText[valueRange[i]]);
-                ctx.fillText(displayInfo[colorPointsBy].legendText[valueRange[i]], 308, offset + (i + 0.5) * stepWidth);
+                console.log(PointScope.Renderer.displayInfo[colorPointsBy].legendText[valueRange[i]]);
+                ctx.fillText(PointScope.Renderer.displayInfo[colorPointsBy].legendText[valueRange[i]], 308, offset + (i + 0.5) * stepWidth);
             }
         }
     }
@@ -710,14 +710,14 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
 
 PointScope.Renderer.updateAxisDisplay = function() {
     
-    document.getElementById('axis_display').checked ? PointScope.Renderer.scene.add(axes) : PointScope.Renderer.scene.remove(axes);
+    document.getElementById('axis_display').checked ? PointScope.Renderer.scene.add(PointScope.Renderer.axes) : PointScope.Renderer.scene.remove(PointScope.Renderer.axes);
     PointScope.Renderer.render();
     
 };
 
 PointScope.Renderer.updateBoxDisplay = function() {
 
-    document.getElementById('bbox_display').checked ? PointScope.Renderer.scene.add(boxHelper) : PointScope.Renderer.scene.remove(boxHelper);
+    document.getElementById('bbox_display').checked ? PointScope.Renderer.scene.add(PointScope.Renderer.boxHelper) : PointScope.Renderer.scene.remove(PointScope.Renderer.boxHelper);
     PointScope.Renderer.render();
     
 };

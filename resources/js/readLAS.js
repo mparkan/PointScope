@@ -436,6 +436,6 @@ PointScope.Readers.readLAS = function (e) {
         }
     }
     
-    validFormatFlag = true;
+    PointScope.PsInterface.validFormatFlag = true;
     return pointCollection;
 };

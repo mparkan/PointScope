@@ -204,7 +204,7 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
 
         console.log('File loaded successfuly');
 
-        if (validFormatFlag) {
+        if (PointScope.PsInterface.validFormatFlag) {
 
             // render the point cloud
             PointScope.PsInterface.init(pointCollection);
@@ -390,8 +390,8 @@ PointScope.PsInterface.printMap = function() {
             ).addTo(mymap);
 
             // add layer switcher
-            mycontrol = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : pc_bbox, 'XY axis' : pc_axis});
-            mymap.addControl(mycontrol);
+            PointScope.PsInterface.LfControl = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : pc_bbox, 'XY axis' : pc_axis});
+            mymap.addControl(LfControl);
             PointScope.PsInterface.initMapFlag = false;
 
         }

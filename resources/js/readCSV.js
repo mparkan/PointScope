@@ -41,15 +41,15 @@ PointScope.Readers.readCSV = function (e) {
 
     // check if header syntax is correct
     var charsToSearch = ["x", "y", "z", "i", "r", "n", "d", "e", "c", "a", "u", "p", "R", "G", "B"];
-    validFormatFlag = true;
+    PointScope.Interface.validFormatFlag = true;
     for ( var i = 0; i < header.length; i++ ) {
 
         if (charsToSearch.indexOf(header[i]) == -1) {
-            
-            validFormatFlag = false;
+
+            PointScope.Interface.validFormatFlag = false;
             alert('CSV header format not supported');
             return;
-            
+
         }
 
     }
@@ -61,11 +61,10 @@ PointScope.Readers.readCSV = function (e) {
       for ( var j = 0; j < lines[i].length; j++ ){
         pointCollection.points[lasKeyMap[header[j]]].push( parseFloat(lines[i][j]) );
       }
-      
     }
 
     pointCollection.publicHeader['Generating Software'] = undefined;
-    
-    validFormatFlag = true;
+
+    PointScope.Interface.validFormatFlag = true;
     return pointCollection;
 };
