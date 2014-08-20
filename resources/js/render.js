@@ -37,8 +37,8 @@ PointScope.Renderer.setSRS = function () {
         }
         
         pointCollection.computedMetadata.SRID = srid ;
-        pointCollection.computedMetadata.SRN = prjdefs[srid][0];
-        pointCollection.computedMetadata.SRN = prjdefs[srid][1];
+        pointCollection.computedMetadata.SRN = PointScope.Projections.prjdefs[srid][0];
+        pointCollection.computedMetadata.SRN = PointScope.Projections.prjdefs[srid][1];
 
         // create map bounding box
         var type = "FeatureCollection";
@@ -83,13 +83,13 @@ PointScope.Renderer.setSRS = function () {
         // compute bounding box coordinates in lat/long
         PointScope.Renderer.bbox_local_srs = JSON.stringify(PointScope.Renderer.mapBoundingBox);
         console.log(PointScope.Renderer.mapBoundingBox);
-        PointScope.Renderer.mapBoundingBox.reproject(prjdefs[srid][1],"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+        PointScope.Renderer.mapBoundingBox.reproject(PointScope.Projections.prjdefs[srid][1],"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
         PointScope.Renderer.mapBoundingBox.crs = {"name":"urn:ogc:def:crs:EPSG::4326"};
         PointScope.Renderer.bbox_global_srs = JSON.stringify(PointScope.Renderer.mapBoundingBox);
 
         // compute axis coordinates in lat/long
         var vaxis_local_srs = JSON.stringify(PointScope.Renderer.mapAxis);
-        PointScope.Renderer.mapAxis.reproject(prjdefs[srid][1],'+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs');
+        PointScope.Renderer.mapAxis.reproject(PointScope.Projections.prjdefs[srid][1],'+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs');
         PointScope.Renderer.mapAxis.crs = {"name":"urn:ogc:def:crs:EPSG::4326"};
         var axis_global_srs = JSON.stringify(PointScope.Renderer.mapAxis);
         console.log('axis_global_srs');
@@ -507,7 +507,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             writeOffsetUint8 = 0;
             k = 0;
             for ( var i = 0; i < PointScope.Renderer.num_particles-2; i++ ) {
-                var currentColor = colormap[colormapName][dv6.getUint8(writeOffsetUint8, true) & 31];
+                var currentColor = PointScope.Colormaps.colormap[colormapName][dv6.getUint8(writeOffsetUint8, true) & 31];
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -523,7 +523,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             k = 0;
             scaled_max = PointScope.Renderer.geometry.boundingBox.max.z - PointScope.Renderer.geometry.boundingBox.min.z;
             for ( var i = 0; i < PointScope.Renderer.num_particles-2; i++ ) {
-                var currentColor = colormap[colormapName][Math.round(255*(PointScope.Renderer.positions[3*i+2] + PointScope.Renderer.geometry.boundingBox.max.z)/scaled_max)];
+                var currentColor = PointScope.Colormaps.colormap[colormapName][Math.round(255*(PointScope.Renderer.positions[3*i+2] + PointScope.Renderer.geometry.boundingBox.max.z)/scaled_max)];
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -541,7 +541,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             scaled_intensity === 0 ? scaled_intensity = 1 : null;
             
             for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-                var currentColor = colormap[colormapName][Math.round(255*(dv4.getUint16(writeOffsetUint16, true) -    pointCollection.computedMetadata['Intensity min'] )/scaled_intensity)];
+                var currentColor = PointScope.Colormaps.colormap[colormapName][Math.round(255*(dv4.getUint16(writeOffsetUint16, true) -    pointCollection.computedMetadata['Intensity min'] )/scaled_intensity)];
                 PointScope.Renderer.colors[k]     = currentColor[0];
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -556,7 +556,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             writeOffsetUint8 = 0;
             k = 0;
             for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-                var currentColor = colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) & 7)-1]; // Return Number, 3 bits (bits 0, 1, 2), 3 bits, * 
+                var currentColor = PointScope.Colormaps.colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) & 7)-1]; // Return Number, 3 bits (bits 0, 1, 2), 3 bits, * 
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -572,7 +572,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             writeOffsetUint8 = 0;
             k = 0;
             for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-                var currentColor = colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) >> 7) & 1];
+                var currentColor = PointScope.Colormaps.colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) >> 7) & 1];
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -655,8 +655,8 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
         var cv  = document.getElementById('cv');
         var    ctx = cv.getContext('2d');
         
-        console.log('colormap[ColormapName]');
-        console.log(colormap[colormapName]);
+        console.log('PointScope.Colormaps.colormap[ColormapName]');
+        console.log(PointScope.Colormaps.colormap[colormapName]);
         
         // fill rectangles
         var offset = 15;
@@ -664,7 +664,7 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
 
             ctx.beginPath();
             var currentColor;
-            displayInfo[colorPointsBy].discrete ? currentColor = colormap[colormapName][valueRange[i]] : currentColor = colormap[colormapName][ncolors-i-1];
+            displayInfo[colorPointsBy].discrete ? currentColor = PointScope.Colormaps.colormap[colormapName][valueRange[i]] : currentColor = PointScope.Colormaps.colormap[colormapName][ncolors-i-1];
             var color = 'rgb(' + Math.round(currentColor[0]*255) + ', ' + Math.round(currentColor[1]*255) + ', ' + Math.round(currentColor[2]*255) + ')';
             ctx.fillStyle = color;
             ctx.fillRect(315, offset + i * stepWidth, 35, stepWidth);
