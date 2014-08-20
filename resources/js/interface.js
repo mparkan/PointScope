@@ -7,12 +7,12 @@
 *
 */
 
+
 // Point collection object
-function PointCollection()
-{
+PointScope.PsInterface.PointCollection = function () {
 	// attributes
 	this.publicHeader = {
-		'File Signature (“LASF”)' : null, 
+		'File Signature (“LASF”)': null,
 		'File Source ID' : null,
 		'Global Encoding' : null,
 		'Project ID - GUID data 1' : null,
@@ -25,13 +25,15 @@ function PointCollection()
 		'Generating Software' : null,
 		'File Creation Day of Year' : null,
 		'File Creation Year' : null
-		};
+	};
+
 	this.variableLengthHeader = {
 		'GeoKeyDirectoryTag' : null,
 		'GeoDoubleParamsTag' : null,
 		'GeoAsciiParamsTag' : null
-		};
-	this.computedMetadata ={
+	};
+
+	this.computedMetadata = {
 		'SRID' : null,
 		'SRN' : null,
 		'SRS' : null,
@@ -51,7 +53,8 @@ function PointCollection()
 		'Intensity min' : null,
 		'Intensity max' : null,
 		'Unique classes' : null
-	};	
+	};
+
 	this.points = {
 		'X' : [],
 		'Y' : [],
@@ -70,11 +73,17 @@ function PointCollection()
 		'Green' : [],
 		'Blue' : []
 	};
-	
+
 }
 
-// geoJSON object
-geoJSON = function (type, crs, features) {
+/**
+ * GeoJSON Object
+ * @param type 
+ * @param crs reference system
+ * @param crs reference system
+ * @return geojson features
+ */
+PointScope.PsInterface.geoJSON = function (type, crs, features) {
 
 	this.type = type;
 	this.crs = {};
@@ -84,7 +93,12 @@ geoJSON = function (type, crs, features) {
 
 };
 
-geoJSON.prototype.reproject = function(from, to) {
+/**
+ * method to reproject geosJSON features
+ * @param from source crs 
+ * @param to destination crs
+ */
+PointScope.PsInterface.geoJSON.prototype.reproject = function(from, to) {
 	
 	for (var i = 0; i < this.features.length; i++) {	
 		
@@ -97,67 +111,70 @@ geoJSON.prototype.reproject = function(from, to) {
 		case "LineString":
 			this.features[i].geometry.coordinates = this.features[i].geometry.coordinates.map(function(x) { return proj4(from, to, x); });
 			break;
-		}
-			
+		}	
 	}
-	
 };
 
-function handleInput(evt) {
+/**
+ * method to check for webgl support
+ * @param evt event
+ */
+PointScope.PsInterface.handleInput = function (evt) {
 	// Check for WebGL support
 	if (Detector.webgl) {
 		// Check for the various File API support.
 		if (window.File && window.FileReader && window.FileList && window.Blob) {
 			// FileReader are supported.
 			console.log('handleFiles(files) - success');
-			handleFileSelect(evt);
+			PointScope.PsInterface.handleFileSelect(evt);
 		} else {
 			alert('The File APIs are not fully supported in this browser.');
 		}
 	} else {
 		Detector.addGetWebGLMessage();
-	}	
+	}
 }
-
-function handleFileSelect(evt) {
+/**
+ * method to update progress bar during file loading
+ * @param evt event
+ */
+PointScope.PsInterface.handleFileSelect = function(evt) {
 
     // Reset progress indicator on new file selection.
-    // progress.style.width = '0%';
-    // progress.textContent = '0%';
 	document.getElementById('progressBar').style.width = '0%';
 	document.getElementById('progressBar').innerHTML = '0%';
 		
 	var file = evt.target.files[0]
 	var sFileName = file.name;
 	file.extension = sFileName.split('.')[sFileName.split('.').length - 1].toLowerCase(); // file extension
-	
+
 	// create file reader
-    reader = new FileReader();
-    reader.onerror = errorHandler;
-    reader.onprogress = updateProgress;
-    reader.onabort = function(e) {
-	
-      alert('File read cancelled');
-	  
+    PointScope.PsInterface.reader = new FileReader();
+    PointScope.PsInterface.reader.onerror = PointScope.PsInterface.errorHandler;
+    PointScope.PsInterface.reader.onprogress = PointScope.PsInterface.updateProgress;
+    PointScope.PsInterface.reader.onabort = function(e) {
+
+	alert('File read cancelled');
+
     };
-	
+
 	// set progress bar to 0%
-    reader.onloadstart = function(e) {
+    PointScope.PsInterface.reader.onloadstart = function(e) {
 	
       //document.getElementById('progress_bar').className = 'loading';
 	  document.getElementById('progressBar').style.width = '0%';
 	  document.getElementById('progressBar').innerHTML = '0%';
-	  
+
     };
-	
+
 	switch(file.extension){
 	case 'csv':
 		console.log('file is .csv');
-		reader.readAsText(file); // read data from CSV file
+		PointScope.PsInterface.reader.readAsText(file); // read data from CSV file
         break;
 	case 'las':
 		console.log('file is .las');
-        reader.readAsArrayBuffer(file); // read data from LAS file
+        PointScope.PsInterface.reader.readAsArrayBuffer(file); // read data from LAS file
         break;
 	default:
 		alert('unsupported file format!');
@@ -165,22 +182,18 @@ function handleFileSelect(evt) {
 	}
 
 	var container; //stats
-		
-    reader.onload = function(e) {
-	
-	  // Ensure that the progress bar displays 100% at the end.
-	  // progress.style.width = '100%';
-	  // progress.textContent = '100%';
-	  // setTimeout("document.getElementById('progress_bar').className='';", 25000);
+
+    PointScope.PsInterface.reader.onload = function(e) {
+
 	  	document.getElementById('progressBar').style.width = '100%';
 		document.getElementById('progressBar').innerHTML = '100%';
-		
+
 		ev = e.target.result;
-	
+
 		switch(file.extension){
 		case 'csv':
 			console.log('file is .csv');
-			
+
 			//pointCollection = readCSV(e); // read data from CSV file
 			//console.log(pointCollection);
 			break;
@@ -188,41 +201,49 @@ function handleFileSelect(evt) {
 			console.log('file is .las');
 			console.log(e);
 			pointCollection = readLAS(e); // read data from LAS file
-			
+
 			//console.log(pointCollection);
 			break;
 		default:
 			alert('unsupported file format!');
 		break;
 		}
-		 
+
 		console.log('File loaded successfuly')
-		 
+
 		if (validFormatFlag) {
-			
+
 			// render the point cloud
 			init(pointCollection);
 			animate();
-			  
+ 
 			// update right panel
-			printMetadata(file, pointCollection);
-			printDownload();
+			PointScope.PsInterface.printMetadata(file, pointCollection);
+			PointScope.PsInterface.printDownload();
 
 			// update map
 			loadMinimap = true;
 			// printMap()
-			
+
 		}
 		
     }
 	
 }
 
-function abortRead() {
-    reader.abort();
+/**
+ * method to abort file loading
+ *
+ */
+PointScope.PsInterface.abortRead = function() {
+    PointScope.PsInterface.reader.abort();
   }
 
-function errorHandler(evt) {
+  /**
+ * method to handle file reading errors
+ *
+ */
+PointScope.PsInterface.errorHandler = function(evt){
 	// TODO: FileError is deprecated. Please use the 'name' or 'message' attributes of DOMError rather than 'code'. 
 	switch(evt.target.error.code) {
 	  case evt.target.error.NOT_FOUND_ERR:
@@ -238,33 +259,41 @@ function errorHandler(evt) {
 	};
 }
 
-function updateProgress(evt) {
+/**
+ * method to abort file loading
+ *
+ */
+PointScope.PsInterface.updateProgress = function(evt) {
 	// evt is an ProgressEvent.
 	if (evt.lengthComputable) {
-		
+
 	 //console.log(evt)
 	  var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
 	  console.log(percentLoaded)
 	  // Increase the progress bar length.
-	  
+ 
 	  if (percentLoaded <= 100) {
-	  
+
 	    $('progressBar').css('width', percentLoaded+'%').attr('aria-valuenow', percentLoaded);
 		//document.getElementById('progressBar').style.width = percentLoaded +'%';
 		document.getElementById('progressBar').innerHTML = percentLoaded +'%';
-		
+
 		//progress.style.width = percentLoaded + '%';
 		//progress.textContent = percentLoaded + '%';
-		
+
 	  }
-	  
+
 	}
 }
 
-function printDownload() {
+/**
+ * method to download output
+ *
+ */
+PointScope.PsInterface.printDownload = function() {
 
 	if (projFlag){
-	
+
 		document.getElementById('downloads').innerHTML =
 			'<table class="table">' +
 			'<thead>' +
@@ -287,29 +316,33 @@ function printDownload() {
 			  '</tr>'+
 			'</tbody>'+
 		  '</table>';
-		  
+
 	  } else {
-	  
+ 
 		document.getElementById('downloads').innerHTML =
 		'<p><span class="glyphicon glyphicon-warning-sign"></span> no download available (SRS was not defined)</p>'
-	  
+
 	  }
 	
 }
 
-function printMap() {
-	
+/**
+ * method to print map
+ *
+ */
+PointScope.PsInterface.printMap = function() {
+
 	// check if projection is available
 	if (projFlag){
-		
+
 		console.log('projection available')
-		
+
 		// check if map frame already exists
 		// hasLayer( <ILayer> layer )
 		if (initMapFlag){
-			
+
 			console.log('reset map')
-			
+
 			// create bounding box layer
 			pc_bbox = L.geoJson(mapBoundingBox, {
 				style: {stroke: true,
@@ -323,9 +356,9 @@ function printMap() {
 					//layer.bindPopup(feature.properties.name);
 				}
 			});
-			
+
 			// create xy axis layer
-			
+
 			pc_axis = L.geoJson(mapAxis, {
 				style: function (feature) {
 							return {
@@ -338,24 +371,24 @@ function printMap() {
 					//layer.bindPopup(feature.properties.name);
 				}
 			});
-			
+
 			// add OSM baselayer
 			var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-			
+
 			var osm = new L.TileLayer(osmUrl, {
 				maxZoom: 18,
 				attribution: "Map and data © <a href='http://www.openstreetmap.org'>OpenStreetMap</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/'>CC-BY-SA</a>"
 				});
-			
+
 			// add Google baselayers
 			var ggl = new L.Google(); //.addTo(map);
 			var ggl2 = new L.Google('TERRAIN');
-			
+
 			// add map
 			mymap = L.map('minimap', {
 				layers: [ggl, pc_bbox, pc_axis] //
 			});
-			
+
 			// add scale bar
 			L.control.scale(
 				{
@@ -365,17 +398,17 @@ function printMap() {
 					imperial: false,
 				}
 			).addTo(mymap);
-			
+
 			// add layer switcher
 			mycontrol = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : pc_bbox, 'XY axis' : pc_axis});
 			mymap.addControl(mycontrol);
 			
 			initMapFlag = false
-			
+
 		}
-		
+
 		if (mymap.hasLayer(pc_bbox)){
-		
+
 			mymap.removeLayer(pc_bbox); //remove layer from the map
 			pc_bbox.clearLayers(); // clear data from layer
 			console.log('pc_bbox empty')
@@ -386,11 +419,11 @@ function printMap() {
 			console.log('pc_bbox')
 			console.log(pc_bbox)
 			console.log('hasLayer(pc_bbox): ' + mymap.hasLayer(pc_bbox))
-			
+
 		}
-		
+
 		if (mymap.hasLayer(pc_axis)){
-		
+
 			mymap.removeLayer(pc_axis); //remove layer from the map
 			pc_axis.clearLayers(); // clear data from layer
 			console.log('pc_axis empty')
@@ -401,62 +434,79 @@ function printMap() {
 			console.log('pc_axis')
 			console.log(pc_axis)
 			console.log('hasLayer(pc_axis): ' + mymap.hasLayer(pc_axis))
-			
+
 		}
 
 		// fit view to object bounds
 		mymap.fitBounds(pc_bbox.getBounds());
-		
+
 	} else {
-			
+
 		document.getElementById('map').innerHTML = 
 		  '<div id="minimap" class="panel-body">' +
 			'<p><span class="glyphicon glyphicon-warning-sign"></span> no map available (SRS was not defined)</p>' +				
 		  '</div>';
-		  
+
 	}
 
 }
 
-function printMetadata(file, pointCollection) {
+/**
+ * method to print metadata
+ *
+ */
+PointScope.PsInterface.printMetadata = function(file, pointCollection) {
 
 	document.getElementById('metadata_filename').innerHTML = file.name;
 	document.getElementById('metadata_date_modification').innerHTML = file.lastModifiedDate;
 	document.getElementById('metadata_npoints').innerHTML = pointCollection.computedMetadata['Number of point records'];
-	
+
 	document.getElementById('metadata_xextent').innerHTML = pointCollection.computedMetadata['X min'].toFixed(2) + ', ' + pointCollection.computedMetadata['X max'].toFixed(2);
 	document.getElementById('metadata_yextent').innerHTML = pointCollection.computedMetadata['Y min'].toFixed(2) + ', ' + pointCollection.computedMetadata['Y max'].toFixed(2);
 	document.getElementById('metadata_zextent').innerHTML = pointCollection.computedMetadata['Z min'].toFixed(2) + ', ' + pointCollection.computedMetadata['Z max'].toFixed(2);
-	
+
 	document.getElementById('metadata_software').innerHTML = pointCollection.publicHeader['Generating Software'];
 	
 	document.getElementById('metadata_srid').innerHTML = pointCollection.computedMetadata['SRN'] + ' (' + pointCollection.computedMetadata['SRID'] + ')'; 
 	document.getElementById('metadata_srs').innerHTML = pointCollection.computedMetadata['SRS']
-	
+
 }
 
-function findMin(a) {
-	
+/**
+ * method to find minimum
+ * @param a value list
+ */
+PointScope.PsInterface.findMin = function(a) {
+
 	var minVal = a[0]; 
 	for ( var i = 1; i < a.length; i++ ) {
 		a[i] < minVal ? minVal = a[i] : null;
 	}
 	return minVal;
-	
+
 }
 
-function findMax(a) {
-	
+/**
+ * method to find minimum
+ * @param a value list
+ */
+PointScope.PsInterface.findMax = function(a) {
+
 	var maxVal = a[0]; 
 	for ( var i = 1; i < a.length; i++ ) {
 		a[i] > maxVal ? maxVal = a[i] : null;
 	}
 	return maxVal;
-	
+
 }
 
-function sortNumeric(a, b) {
+/**
+ * method to sort numeric values
+ * @param a value list
+ * @param b value list
+ */
+PointScope.PsInterface.sortNumeric = function(a, b) {
 
     return a - b;
-	
+
 }
