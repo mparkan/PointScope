@@ -19,7 +19,7 @@ PointScope.Readers.readCSV = function (e) {
 
     // parse header
     var header = allTextLines[0].split(',');
-    console.log(header)
+    console.log(header);
 
     var lasKeyMap = {
         'x' : 'X',
@@ -37,7 +37,7 @@ PointScope.Readers.readCSV = function (e) {
         'R' : 'Red',
         'G' : 'Green',
         'B' : 'Blue'
-    }
+    };
 
     // check if header syntax is correct
     var charsToSearch = ["x", "y", "z", "i", "r", "n", "d", "e", "c", "a", "u", "p", "R", "G", "B"];
@@ -47,7 +47,7 @@ PointScope.Readers.readCSV = function (e) {
         if (charsToSearch.indexOf(header[i]) == -1) {
             
             validFormatFlag = false;
-            alert('CSV header format not supported')
+            alert('CSV header format not supported');
             return;
             
         }
@@ -68,4 +68,4 @@ PointScope.Readers.readCSV = function (e) {
     
     validFormatFlag = true;
     return pointCollection;
-}
+};
