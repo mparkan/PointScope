@@ -195,7 +195,7 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
             case 'las':
                 console.log('file is .las');
                 console.log(e);
-                pointCollection = readLAS(e); // read data from LAS file
+                pointCollection = PointScope.Readers.readLAS(e); // read data from LAS file
                 break;
             default:
                 alert('unsupported file format!');
@@ -282,7 +282,7 @@ PointScope.PsInterface.updateProgress = function(evt) {
  */
 PointScope.PsInterface.printDownload = function() {
 
-    if (projFlag){
+    if (PointScope.PsInterface.projFlag){
 
         document.getElementById('downloads').innerHTML =
             '<table class="table">' +
@@ -323,13 +323,13 @@ PointScope.PsInterface.printDownload = function() {
 PointScope.PsInterface.printMap = function() {
 
     // check if projection is available
-    if (projFlag){
+    if (PointScope.PsInterface.projFlag){
 
         console.log('projection available');
 
         // check if map frame already exists
         // hasLayer( <ILayer> layer )
-        if (initMapFlag){
+        if (PointScope.PsInterface.initMapFlag){
 
             console.log('reset map');
 
@@ -392,8 +392,7 @@ PointScope.PsInterface.printMap = function() {
             // add layer switcher
             mycontrol = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : pc_bbox, 'XY axis' : pc_axis});
             mymap.addControl(mycontrol);
-            
-            initMapFlag = false;
+            PointScope.PsInterface.initMapFlag = false;
 
         }
 

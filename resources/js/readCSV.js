@@ -9,7 +9,7 @@
 
 // TO DO : customize error messages
 
-function readCSV(e) {
+PointScope.Readers.readCSV = function (e) {
 
     var csv = e.target.result;
     var pointCollection = new PointCollection();

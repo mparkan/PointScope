@@ -32,7 +32,7 @@ PointScope.Renderer.setSRS = function () {
     console.log('setSRS()');
     try {
         var srid = "";
-        if (!projFlag) {
+        if (!PointScope.PsInterface.projFlag) {
             srid = document.getElementById('userSRS').value;
         }
         
@@ -100,7 +100,7 @@ PointScope.Renderer.setSRS = function () {
         document.getElementById('metadata_srs').innerHTML = pointCollection.computedMetadata.SRS;
 
         // update projection availability flag
-        projFlag = true;
+        PointScope.PsInterface.projFlag = true;
 
         // update download menu
         PointScope.PsInterface.printDownload();
@@ -115,7 +115,7 @@ PointScope.Renderer.setSRS = function () {
         console.log(err);
         document.getElementById('userInputSRS').className = "form-group has-error has-feedback";
         document.getElementById('userSRSLabel').innerHTML = "The SRS your entered is invalid";
-        projFlag = false;
+        PointScope.PsInterface.projFlag = false;
         console.log('SRS unavailable');
 
     }
@@ -124,7 +124,7 @@ PointScope.Renderer.setSRS = function () {
 
 PointScope.PsInterface.init = function (pointCollection) {
 
-    if (resetFlag){
+    if (PointScope.PsInterface.resetFlag){
 
         for ( var i = PointScope.Renderer.scene.children.length - 1; i >= 0 ; i -- ) {
 
@@ -307,7 +307,7 @@ PointScope.PsInterface.init = function (pointCollection) {
             pointCollection.computedMetadata.SRID = undefined; 
             pointCollection.computedMetadata.SRN = undefined; 
             pointCollection.computedMetadata.SRS = undefined;
-            projFlag = false;
+            PointScope.PsInterface.projFlag = false;
             break;
 
         case false:
@@ -315,13 +315,13 @@ PointScope.PsInterface.init = function (pointCollection) {
             // SRS is defined
             if (!(pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'] === undefined)){
                 srid = 'EPSG:' + pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'].wValue_Offset;
-                projFlag = true;
+                PointScope.PsInterface.projFlag = true;
                 setSRS();
             }
 
             if (!(pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'] === undefined)){
                 srid = 'EPSG:' + pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'].wValue_Offset;
-                projFlag = true;
+                PointScope.PsInterface.projFlag = true;
                 setSRS();
             }
 
@@ -398,7 +398,7 @@ PointScope.PsInterface.init = function (pointCollection) {
     
     // render scene
     PointScope.Renderer.render();
-    resetFlag = true;
+    PointScope.PsInterface.resetFlag = true;
     
 };
 
@@ -415,7 +415,7 @@ PointScope.Renderer.onWindowResize = function() {
 
 PointScope.Renderer.updateViewController = function(option) {
     
-    controls = undefined;
+    PointScope.Renderer.controls = undefined;
     
     switch(option){
     case 'Trackball':
@@ -426,18 +426,18 @@ PointScope.Renderer.updateViewController = function(option) {
         old_element.parentNode.replaceChild(new_element, old_element);
         
         // add camera controls
-        controls = new THREE.TrackballControls(PointScope.Renderer.camera, document.getElementById('empty'));
+        PointScope.Renderer.controls = new THREE.TrackballControls(PointScope.Renderer.camera, document.getElementById('empty'));
 
         // set control options
-        controls.rotateSpeed = 1.0;
-        controls.zoomSpeed = 1.2;
-        controls.panSpeed = 0.8;
-        controls.noZoom = false;
-        controls.noPan = false;
-        controls.noRotate = false;
-        controls.noRoll = false;
-        controls.staticMoving = true;
-        controls.dynamicDampingFactor = 0.3;
+        PointScope.Renderer.controls.rotateSpeed = 1.0;
+        PointScope.Renderer.controls.zoomSpeed = 1.2;
+        PointScope.Renderer.controls.panSpeed = 0.8;
+        PointScope.Renderer.controls.noZoom = false;
+        PointScope.Renderer.controls.noPan = false;
+        PointScope.Renderer.controls.noRotate = false;
+        PointScope.Renderer.controls.noRoll = false;
+        PointScope.Renderer.controls.staticMoving = true;
+        PointScope.Renderer.controls.dynamicDampingFactor = 0.3;
         //controls.keys = [ 65, 83, 68 ];
         //controls.addEventListener( 'change', render );
         break;
@@ -449,13 +449,13 @@ PointScope.Renderer.updateViewController = function(option) {
         old_element.parentNode.replaceChild(new_element, old_element);
         
         // add camera controls
-        controls = new THREE.FlyControls(camera, document.getElementById('empty'));
+        PointScope.Renderer.controls = new THREE.FlyControls(PointScope.Renderer.camera, document.getElementById('empty'));
         
         // set control options
-        controls.movementSpeed = 200;
-        controls.rollSpeed = Math.PI / 12;
-        controls.autoForward = false;
-        controls.dragToLook = true;
+        PointScope.Renderer.controls.movementSpeed = 200;
+        PointScope.Renderer.controls.rollSpeed = Math.PI / 12;
+        PointScope.Renderer.controls.autoForward = false;
+        PointScope.Renderer.controls.dragToLook = true;
         break;
     }
 };
@@ -464,7 +464,7 @@ PointScope.Renderer.updatePointScale = function() {
     
     console.log('update point size');
     document.getElementById('scalePoints').value <= 10.0 ? PointScope.Renderer.uniforms.size.value = document.getElementById('scalePoints').value : PointScope.Renderer.uniforms.size.value = 10.0;
-    render();
+    PointScope.Renderer.render();
 
 };
 
@@ -725,7 +725,7 @@ PointScope.Renderer.updateBoxDisplay = function() {
 PointScope.Renderer.animate = function () {
 
     var dt = PointScope.Renderer.clock.getDelta();
-    controls.update(dt);
+    PointScope.Renderer.controls.update(dt);
     PointScope.Renderer.render(PointScope.Renderer.scene,PointScope.Renderer.camera);
 
     requestAnimationFrame(PointScope.Renderer.animate);

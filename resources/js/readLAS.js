@@ -8,14 +8,14 @@
 */
 
 // convert UInt to character string
-function uintToString(uintArray) {
+PointScope.Readers.uintToString = function (uintArray) {
     var encodedString = String.fromCharCode.apply(null, uintArray),
         decodedString = decodeURIComponent(escape(encodedString));
     return decodedString;
 }
 
 // read the LAS 1.2 public header
-function readLAS(e) {
+PointScope.Readers.readLAS = function (e) {
     
     var arrayBuffer = e.target.result;
     console.log('arrayBuffer')
@@ -33,8 +33,8 @@ function readLAS(e) {
     for ( var i = 0; i < 4; i++ ) {
         uintArray[i] = view.getUint8(0+i);
     }
-    public_header['File Signature (“LASF”)'] = uintToString(uintArray);
-    pointCollection.publicHeader['File Signature (“LASF”)'] = uintToString(uintArray);
+    public_header['File Signature (“LASF”)'] = PointScope.Readers.uintToString(uintArray);
+    pointCollection.publicHeader['File Signature (“LASF”)'] = PointScope.Readers.uintToString(uintArray);
     
     // File Source ID, unsigned short, 2 bytes, required
     public_header['File Source ID'] = view.getUint16(4, true);
@@ -61,8 +61,8 @@ function readLAS(e) {
     for ( var i = 0; i < 8; i++ ) {
         uintArray[i] = view.getUint8(16+i);
     }
-    public_header['Project ID - GUID data 4'] = uintToString(uintArray);
-    pointCollection.publicHeader['Project ID - GUID data 4'] = uintToString(uintArray);
+    public_header['Project ID - GUID data 4'] = PointScope.Readers.uintToString(uintArray);
+    pointCollection.publicHeader['Project ID - GUID data 4'] = PointScope.Readers.uintToString(uintArray);
     
     // Version Major, unsigned char, 1 byte, required
     public_header['Version Major'] = view.getUint8(24);
@@ -77,16 +77,16 @@ function readLAS(e) {
     for ( var i = 0; i < 32; i++ ) {
         uintArray[i] = view.getUint8(26+i, true);
     }
-    public_header['System Identifier'] = uintToString(uintArray);
-    pointCollection.publicHeader['System Identifier'] = uintToString(uintArray);
+    public_header['System Identifier'] = PointScope.Readers.uintToString(uintArray);
+    pointCollection.publicHeader['System Identifier'] = PointScope.Readers.uintToString(uintArray);
     
     // Generating Software, char[32], 32 bytes, required
     var uintArray = [];
     for ( var i = 0; i < 32; i++ ) {
         uintArray[i] = view.getUint8(58+i);
     }
-    public_header['Generating Software'] = uintToString(uintArray);
-    pointCollection.publicHeader['Generating Software'] = uintToString(uintArray);
+    public_header['Generating Software'] = PointScope.Readers.uintToString(uintArray);
+    pointCollection.publicHeader['Generating Software'] = PointScope.Readers.uintToString(uintArray);
     
     // File Creation Day of Year, unsigned short, 2 bytes , optional
     public_header['File Creation Day of Year'] = view.getUint16(90, true);
@@ -193,7 +193,7 @@ function readLAS(e) {
         for ( var j = 0; j < 16; j++ ) {
             uintArray[j] = view.getUint8(current_offset+j);
         }
-        variable_header['User ID'] = uintToString(uintArray);
+        variable_header['User ID'] = PointScope.Readers.uintToString(uintArray);
         current_offset += 16;
         
         // Record ID, unsigned short, 2 bytes, required
@@ -209,7 +209,7 @@ function readLAS(e) {
         for ( var j = 0; j < 32; j++ ) {
             uintArray[j] = view.getUint8(current_offset + j);
         }
-        variable_header['Description'] = uintToString(uintArray);
+        variable_header['Description'] = PointScope.Readers.uintToString(uintArray);
         current_offset += 32;
         
         // read GeoKeyDirectoryTag Record
@@ -280,7 +280,7 @@ function readLAS(e) {
                 current_offset += 1;
             }
             
-            GeoAsciiParamsTag['pAsciiTags'] = uintToString(uintArray);
+            GeoAsciiParamsTag['pAsciiTags'] = PointScope.Readers.uintToString(uintArray);
             console.log(GeoAsciiParamsTag);
             pointCollection.variableLengthHeader['GeoAsciiParamsTag'] = GeoAsciiParamsTag;
         }
