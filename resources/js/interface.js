@@ -207,8 +207,8 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
         if (validFormatFlag) {
 
             // render the point cloud
-            init(pointCollection);
-            animate();
+            PointScope.PsInterface.init(pointCollection);
+            PointScope.Renderer.animate();
 
             // update right panel
             PointScope.PsInterface.printMetadata(file, pointCollection);

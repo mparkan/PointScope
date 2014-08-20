@@ -22,7 +22,7 @@ function readLAS(e) {
 	var byteLength = arrayBuffer.byteLength;
 	var view = new DataView(arrayBuffer);
 	
-	var pointCollection = new PointCollection();
+	var pointCollection = new PointScope.PsInterface.PointCollection();
 
 	console.log(pointCollection);
 	var current_offset = 0;
@@ -391,10 +391,10 @@ function readLAS(e) {
 	pointCollection.computedMetadata['Intensity max'] = maxVal;
 	
 	// set classification values
-	pointCollection.computedMetadata['Unique classes'] = a.sort(sortNumeric);
+	pointCollection.computedMetadata['Unique classes'] = a.sort(PointScope.PsInterface.sortNumeric);
 	console.log('a')
 	console.log(a);
-	console.log(a.sort(sortNumeric));
+	console.log(a.sort(PointScope.PsInterface.sortNumeric));
 	
 	console.log('Point Data Format ID (0-99 for spec): ' + pointCollection.publicHeader['Point Data Format ID (0-99 for spec)']);
 	

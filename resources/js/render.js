@@ -28,7 +28,6 @@ PointScope.Renderer.findMax = function (a) {
 
 };
 
-
 PointScope.Renderer.setSRS = function () {
     console.log('setSRS()');
     try {
@@ -104,7 +103,7 @@ PointScope.Renderer.setSRS = function () {
         projFlag = true;
 
         // update download menu
-        printDownload();
+        PointScope.PsInterface.printDownload();
 
         document.getElementById('userInputSRS').className = "form-group";
         document.getElementById('userSRSLabel').innerHTML = "Please indicate the SRS to use in this project:";
@@ -113,7 +112,7 @@ PointScope.Renderer.setSRS = function () {
 
     } 
     catch(err) {
-
+        console.log(err);
         document.getElementById('userInputSRS').className = "form-group has-error has-feedback";
         document.getElementById('userSRSLabel').innerHTML = "The SRS your entered is invalid";
         projFlag = false;
