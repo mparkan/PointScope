@@ -12,13 +12,13 @@ PointScope.Readers.uintToString = function (uintArray) {
     var encodedString = String.fromCharCode.apply(null, uintArray),
         decodedString = decodeURIComponent(escape(encodedString));
     return decodedString;
-}
+};
 
 // read the LAS 1.2 public header
 PointScope.Readers.readLAS = function (e) {
     
     var arrayBuffer = e.target.result;
-    console.log('arrayBuffer')
+    console.log('arrayBuffer');
     var byteLength = arrayBuffer.byteLength;
     var view = new DataView(arrayBuffer);
     
@@ -57,7 +57,7 @@ PointScope.Readers.readLAS = function (e) {
     pointCollection.publicHeader['Project ID - GUID data 3'] = view.getUint16(14, true);
     
     // Project ID - GUID data 4, unsigned char[8], 8 bytes, optional
-    var uintArray = [];
+    uintArray = [];
     for ( var i = 0; i < 8; i++ ) {
         uintArray[i] = view.getUint8(16+i);
     }
@@ -73,7 +73,7 @@ PointScope.Readers.readLAS = function (e) {
     pointCollection.publicHeader['Version Minor'] = view.getUint8(25);
     
     // System Identifier, char[32], 32 bytes, required
-    var uintArray = [];
+    uintArray = [];
     for ( var i = 0; i < 32; i++ ) {
         uintArray[i] = view.getUint8(26+i, true);
     }
@@ -81,7 +81,7 @@ PointScope.Readers.readLAS = function (e) {
     pointCollection.publicHeader['System Identifier'] = PointScope.Readers.uintToString(uintArray);
     
     // Generating Software, char[32], 32 bytes, required
-    var uintArray = [];
+    uintArray = [];
     for ( var i = 0; i < 32; i++ ) {
         uintArray[i] = view.getUint8(58+i);
     }
@@ -185,11 +185,11 @@ PointScope.Readers.readLAS = function (e) {
     for ( var i = 0; i < pointCollection.publicHeader['Number of Variable Length Records']; i++ ) {
         
         // Reserved, unsigned short, 2 bytes 
-        variable_header['Reserved'] = view.getUint16(current_offset, true);
+        variable_header.Reserved = view.getUint16(current_offset, true);
         current_offset += 2;
         
         // User ID, char[16], 16 bytes, required
-        var uintArray = [];
+        uintArray = [];
         for ( var j = 0; j < 16; j++ ) {
             uintArray[j] = view.getUint8(current_offset+j);
         }
@@ -205,11 +205,11 @@ PointScope.Readers.readLAS = function (e) {
         current_offset += 2;
         
         // Description, char[32], 32 bytes 
-        var uintArray = [];
+        uintArray = [];
         for ( var j = 0; j < 32; j++ ) {
             uintArray[j] = view.getUint8(current_offset + j);
         }
-        variable_header['Description'] = PointScope.Readers.uintToString(uintArray);
+        variable_header.Description = PointScope.Readers.uintToString(uintArray);
         current_offset += 32;
         
         // read GeoKeyDirectoryTag Record
@@ -225,18 +225,18 @@ PointScope.Readers.readLAS = function (e) {
         if (variable_header['Record ID'] == 34735){
         
             var GeoKeyDirectoryTag = {};
-            GeoKeyDirectoryTag['wKeyDirectoryVersion'] = view.getUint16(current_offset, true);
+            GeoKeyDirectoryTag.wKeyDirectoryVersion = view.getUint16(current_offset, true);
             current_offset += 2;
-            GeoKeyDirectoryTag['wKeyRevision'] = view.getUint16(current_offset , true);
+            GeoKeyDirectoryTag.wKeyRevision = view.getUint16(current_offset , true);
             current_offset += 2;
-            GeoKeyDirectoryTag['wMinorRevision'] = view.getUint16(current_offset, true);
+            GeoKeyDirectoryTag.wMinorRevision = view.getUint16(current_offset, true);
             current_offset += 2;
-            GeoKeyDirectoryTag['wNumberOfKeys'] = view.getUint16(current_offset, true);
+            GeoKeyDirectoryTag.wNumberOfKeys = view.getUint16(current_offset, true);
             current_offset += 2;
             
             var pKeys = { 'wKeyID' : { } };
             var offset = 0;
-            for ( var j = 0; j < GeoKeyDirectoryTag['wNumberOfKeys']; j++ ) {
+            for ( var j = 0; j < GeoKeyDirectoryTag.wNumberOfKeys; j++ ) {
                 
                 pKeys.wKeyID[view.getUint16(current_offset + offset, true)] = {
                     'wTIFFTagLocation' : view.getUint16(current_offset + 2 + offset, true), 
@@ -246,10 +246,10 @@ PointScope.Readers.readLAS = function (e) {
                 offset += 8;
                 
             }
-            GeoKeyDirectoryTag['pKeys'] = pKeys;
-            current_offset += 8 * GeoKeyDirectoryTag['wNumberOfKeys'];
+            GeoKeyDirectoryTag.pKeys = pKeys;
+            current_offset += 8 * GeoKeyDirectoryTag.wNumberOfKeys;
             console.log(GeoKeyDirectoryTag);
-            pointCollection.variableLengthHeader['GeoKeyDirectoryTag'] = GeoKeyDirectoryTag;
+            pointCollection.variableLengthHeader.GeoKeyDirectoryTag = GeoKeyDirectoryTag;
         }
         
         // read GeoDoubleParamsTag Record
@@ -264,9 +264,9 @@ PointScope.Readers.readLAS = function (e) {
                 
             }
             
-            GeoDoubleParamsTag['pDoubleTags'] = pDoubleTags;
+            GeoDoubleParamsTag.pDoubleTags = pDoubleTags;
             console.log(GeoDoubleParamsTag);
-            pointCollection.variableLengthHeader['GeoDoubleParamsTag'] = GeoDoubleParamsTag;
+            pointCollection.variableLengthHeader.GeoDoubleParamsTag = GeoDoubleParamsTag;
         }
         
         // read GeoAsciiParamsTag Record (Optional) 
@@ -280,9 +280,9 @@ PointScope.Readers.readLAS = function (e) {
                 current_offset += 1;
             }
             
-            GeoAsciiParamsTag['pAsciiTags'] = PointScope.Readers.uintToString(uintArray);
+            GeoAsciiParamsTag.pAsciiTags = PointScope.Readers.uintToString(uintArray);
             console.log(GeoAsciiParamsTag);
-            pointCollection.variableLengthHeader['GeoAsciiParamsTag'] = GeoAsciiParamsTag;
+            pointCollection.variableLengthHeader.GeoAsciiParamsTag = GeoAsciiParamsTag;
         }
         
     }
@@ -297,19 +297,20 @@ PointScope.Readers.readLAS = function (e) {
     };
     
     // set offset based on the point data format
+    var step = 0;
     switch(pointCollection.publicHeader['Point Data Format ID (0-99 for spec)']) {
-    case 0:
-        var step = 20;
-        break;
-    case 1:
-        var step = 28;
-        break;
-    case 2:
-        var step = 26;
-        break;
-    case 3:
-        var step = 34;
-        break;
+        case 0:
+            step = 20;
+            break;
+        case 1:
+            step = 28;
+            break;
+        case 2:
+            step = 26;
+            break;
+        case 3:
+            step = 34;
+            break;
     }
 
     current_offset = pointCollection.publicHeader['Offset to point data'];
@@ -318,30 +319,30 @@ PointScope.Readers.readLAS = function (e) {
     pointCollection.computedMetadata['Number of point records'] = nEntries;
     
     // create buffers
-    pointCollection.points['X'] = new ArrayBuffer(nEntries * 4);
-    pointCollection.points['Y'] = new ArrayBuffer(nEntries * 4);
-    pointCollection.points['Z'] = new ArrayBuffer(nEntries * 4);
-    pointCollection.points['Intensity'] = new ArrayBuffer(nEntries * 2);
+    pointCollection.points.X = new ArrayBuffer(nEntries * 4);
+    pointCollection.points.Y = new ArrayBuffer(nEntries * 4);
+    pointCollection.points.Z = new ArrayBuffer(nEntries * 4);
+    pointCollection.points.Intensity = new ArrayBuffer(nEntries * 2);
     
-    pointCollection.points['SubByteFields'] = new ArrayBuffer(nEntries);
+    pointCollection.points.SubByteFields = new ArrayBuffer(nEntries);
     
-    pointCollection.points['Classification'] = new ArrayBuffer(nEntries);
+    pointCollection.points.Classification = new ArrayBuffer(nEntries);
     pointCollection.points['Scan Angle Rank'] = new ArrayBuffer(nEntries);
     pointCollection.points['User Data'] = new ArrayBuffer(nEntries);
     pointCollection.points['Point Source ID'] = new ArrayBuffer(nEntries * 2);
     
     pointCollection.points['GPS Time'] = new ArrayBuffer(nEntries * 8);
-    pointCollection.points['Red'] = new ArrayBuffer(nEntries * 2);
-    pointCollection.points['Green'] = new ArrayBuffer(nEntries * 2);
-    pointCollection.points['Blue'] = new ArrayBuffer(nEntries * 2);
+    pointCollection.points.Red = new ArrayBuffer(nEntries * 2);
+    pointCollection.points.Green = new ArrayBuffer(nEntries * 2);
+    pointCollection.points.Blue = new ArrayBuffer(nEntries * 2);
     
     // create data views
-    var dv1 = new DataView(pointCollection.points['X']);
-    var dv2 = new DataView(pointCollection.points['Y']);
-    var dv3 = new DataView(pointCollection.points['Z']);
-    var dv4 = new DataView(pointCollection.points['Intensity']);
-    var dv5 = new DataView(pointCollection.points['SubByteFields']);
-    var dv6 = new DataView(pointCollection.points['Classification']);
+    var dv1 = new DataView(pointCollection.points.X);
+    var dv2 = new DataView(pointCollection.points.Y);
+    var dv3 = new DataView(pointCollection.points.Z);
+    var dv4 = new DataView(pointCollection.points.Intensity);
+    var dv5 = new DataView(pointCollection.points.SubByteFields);
+    var dv6 = new DataView(pointCollection.points.Classification);
     var dv7 = new DataView(pointCollection.points['Scan Angle Rank']);
     var dv8 = new DataView(pointCollection.points['User Data']);
     var dv9 = new DataView(pointCollection.points['Point Source ID']);
@@ -392,7 +393,7 @@ PointScope.Readers.readLAS = function (e) {
     
     // set classification values
     pointCollection.computedMetadata['Unique classes'] = a.sort(PointScope.PsInterface.sortNumeric);
-    console.log('a')
+    console.log('a');
     console.log(a);
     console.log(a.sort(PointScope.PsInterface.sortNumeric));
     
@@ -418,9 +419,9 @@ PointScope.Readers.readLAS = function (e) {
     if (pointCollection.publicHeader['Point Data Format ID (0-99 for spec)'] == 2 || pointCollection.publicHeader['Point Data Format ID (0-99 for spec)'] == 3){
         console.log('2 || 3');
         
-        var dv11 = new DataView(pointCollection.points['Red']);
-        var dv12 = new DataView(pointCollection.points['Green']);
-        var dv13 = new DataView(pointCollection.points['Blue']);
+        var dv11 = new DataView(pointCollection.points.Red);
+        var dv12 = new DataView(pointCollection.points.Green);
+        var dv13 = new DataView(pointCollection.points.Blue);
         
         writeOffsetUint16 = 0;
         
@@ -437,6 +438,4 @@ PointScope.Readers.readLAS = function (e) {
     
     validFormatFlag = true;
     return pointCollection;
-    
-    console.log('las reading done!')
-}
+};
