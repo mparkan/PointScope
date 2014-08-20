@@ -295,12 +295,12 @@ PointScope.PsInterface.printDownload = function() {
             '</thead>'+
             '<tbody>'+
               '<tr>'+
-                '<td><a href="data:' + "text/json;charset=utf-8," + encodeURIComponent(bbox_global_srs) + '" download="bbox_global_srs.geojson"><b>planimetric bounding box</b></a></td>'+
+                '<td><a href="data:' + "text/json;charset=utf-8," + encodeURIComponent(PointScope.Renderer.bbox_global_srs) + '" download="PointScope.Renderer.bbox_global_srs.geojson"><b>planimetric bounding box</b></a></td>'+
                 '<td>EPSG:4326</td>'+
                 '<td>geojson</td>'+
               '</tr>'+
               '<tr>'+
-                '<td><a href="data:' + "text/json;charset=utf-8," + encodeURIComponent(bbox_local_srs) + '" download="bbox_local_srs.geojson"><b>planimetric bounding box</b></a></td>'+
+                '<td><a href="data:' + "text/json;charset=utf-8," + encodeURIComponent(PointScope.Renderer.bbox_local_srs) + '" download="PointScope.Renderer.bbox_local_srs.geojson"><b>planimetric bounding box</b></a></td>'+
                 '<td>'+ pointCollection.computedMetadata.SRID +'</td>'+
                 '<td>geojson</td>'+
               '</tr>'+
@@ -334,7 +334,7 @@ PointScope.PsInterface.printMap = function() {
             console.log('reset map');
 
             // create bounding box layer
-            pc_bbox = L.geoJson(mapBoundingBox, {
+            pc_bbox = L.geoJson(PointScope.Renderer.mapBoundingBox, {
                 style: {stroke: true,
                         weight: 3,
                         color: '#FFFF00',
@@ -349,7 +349,7 @@ PointScope.PsInterface.printMap = function() {
 
             // create xy axis layer
 
-            pc_axis = L.geoJson(mapAxis, {
+            pc_axis = L.geoJson(PointScope.Renderer.mapAxis, {
                 style: function (feature) {
                             return {
                                 weight: 2,
@@ -404,7 +404,7 @@ PointScope.PsInterface.printMap = function() {
             console.log('pc_bbox empty');
             console.log(pc_bbox);
             
-            pc_bbox.addData(mapBoundingBox);
+            pc_bbox.addData(PointScope.Renderer.mapBoundingBox);
             mymap.addLayer(pc_bbox);
             console.log('pc_bbox');
             console.log(pc_bbox);
@@ -419,7 +419,7 @@ PointScope.PsInterface.printMap = function() {
             console.log('pc_axis empty');
             console.log(pc_axis);
             
-            pc_axis.addData(mapAxis);
+            pc_axis.addData(PointScope.Renderer.mapAxis);
             mymap.addLayer(pc_axis);
             console.log('pc_axis');
             console.log(pc_axis);

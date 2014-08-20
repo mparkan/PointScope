@@ -50,9 +50,9 @@ PointScope.Renderer.setSRS = function () {
             [pointCollection.computedMetadata['X max'], pointCollection.computedMetadata['Y min']],
             [pointCollection.computedMetadata['X min'], pointCollection.computedMetadata['Y min']]]]}}];
 
-        var mapBoundingBox = new PointScope.PsInterface.geoJSON(type, crs, features);
+        PointScope.Renderer.mapBoundingBox = new PointScope.PsInterface.geoJSON(type, crs, features);
         console.log('mapBoundingBox');
-        console.log(mapBoundingBox);
+        console.log(PointScope.Renderer.mapBoundingBox);
 
         // create map axis
         var axisLength = Math.max(pointCollection.computedMetadata['X size'], pointCollection.computedMetadata['Y size'], pointCollection.computedMetadata['Z size']);
@@ -75,23 +75,23 @@ PointScope.Renderer.setSRS = function () {
             }}
         ];
 
-        var mapAxis = new PointScope.PsInterface.geoJSON(type, crs, features);
+        PointScope.Renderer.mapAxis = new PointScope.PsInterface.geoJSON(type, crs, features);
         console.log('mapAxis');
-        console.log(mapAxis);        
-        console.log(JSON.stringify(mapAxis));
+        console.log(PointScope.Renderer.mapAxis);        
+        console.log(JSON.stringify(PointScope.Renderer.mapAxis));
 
         // compute bounding box coordinates in lat/long
-        var bbox_local_srs = JSON.stringify(mapBoundingBox);
-        console.log(mapBoundingBox);
-        mapBoundingBox.reproject(prjdefs[srid][1],"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
-        mapBoundingBox.crs = {"name":"urn:ogc:def:crs:EPSG::4326"};
-        var bbox_global_srs = JSON.stringify(mapBoundingBox);
+        PointScope.Renderer.bbox_local_srs = JSON.stringify(PointScope.Renderer.mapBoundingBox);
+        console.log(PointScope.Renderer.mapBoundingBox);
+        PointScope.Renderer.mapBoundingBox.reproject(prjdefs[srid][1],"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+        PointScope.Renderer.mapBoundingBox.crs = {"name":"urn:ogc:def:crs:EPSG::4326"};
+        PointScope.Renderer.bbox_global_srs = JSON.stringify(PointScope.Renderer.mapBoundingBox);
 
         // compute axis coordinates in lat/long
-        var vaxis_local_srs = JSON.stringify(mapAxis);
-        mapAxis.reproject(prjdefs[srid][1],'+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs');
-        mapAxis.crs = {"name":"urn:ogc:def:crs:EPSG::4326"};
-        var axis_global_srs = JSON.stringify(mapAxis);
+        var vaxis_local_srs = JSON.stringify(PointScope.Renderer.mapAxis);
+        PointScope.Renderer.mapAxis.reproject(prjdefs[srid][1],'+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs');
+        PointScope.Renderer.mapAxis.crs = {"name":"urn:ogc:def:crs:EPSG::4326"};
+        var axis_global_srs = JSON.stringify(PointScope.Renderer.mapAxis);
         console.log('axis_global_srs');
         console.log(axis_global_srs);
 
@@ -126,7 +126,7 @@ PointScope.PsInterface.init = function (pointCollection) {
 
     if (resetFlag){
 
-        for ( var i = scene.children.length - 1; i >= 0 ; i -- ) {
+        for ( var i = PointScope.Renderer.scene.children.length - 1; i >= 0 ; i -- ) {
 
           var obj = scene.children[i];
           scene.remove(obj);
@@ -472,7 +472,7 @@ PointScope.Renderer.updatePointAlpha = function() {
     
     console.log('update point alpha');
     document.getElementById('alphaPoints').value <= 1.0 ? PointScope.Renderer.uniforms.alpha.value = document.getElementById('alphaPoints').value : PointScope.Renderer.uniforms.alpha.value = 1.0;
-    render();
+    PointScope.Renderer.render();
     
 };
 
@@ -540,7 +540,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             var scaled_intensity =     pointCollection.computedMetadata['Intensity max'] -    pointCollection.computedMetadata['Intensity min'];
             scaled_intensity === 0 ? scaled_intensity = 1 : null;
             
-            for ( var i = 0; i < num_particles; i++ ) {
+            for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
                 var currentColor = colormap[colormapName][Math.round(255*(dv4.getUint16(writeOffsetUint16, true) -    pointCollection.computedMetadata['Intensity min'] )/scaled_intensity)];
                 PointScope.Renderer.colors[k]     = currentColor[0];
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
@@ -555,7 +555,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             valueRange = [1 , 5];
             writeOffsetUint8 = 0;
             k = 0;
-            for ( var i = 0; i < num_particles; i++ ) {
+            for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
                 var currentColor = colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) & 7)-1]; // Return Number, 3 bits (bits 0, 1, 2), 3 bits, * 
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
@@ -571,7 +571,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             legendText = {'0' : 'inner flightline', '1' : 'flightline edge'};
             writeOffsetUint8 = 0;
             k = 0;
-            for ( var i = 0; i < num_particles; i++ ) {
+            for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
                 var currentColor = colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) >> 7) & 1];
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
@@ -586,7 +586,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             valueRange = [];
             legendText = [];
             k = 0;
-            for ( var i = 0; i < num_particles; i++ ) {
+            for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
                 PointScope.Renderer.colors[k]     = 1;
                 PointScope.Renderer.colors[k + 1] = 1;
                 PointScope.Renderer.colors[k + 2] = 1;
@@ -613,7 +613,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
     }
 
     console.log(renderOn);
-    renderOn ? render() : null;
+    renderOn ? PointScope.Renderer.render() : null;
     PointScope.Renderer.updateColorbar(document.getElementById('colorPointsBy').value);
 };
 
@@ -622,105 +622,103 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
     var colormapName = displayInfo[colorPointsBy].colormapName;
     var valueRange = displayInfo[colorPointsBy].valueRange;
     
-    switch (colormapName){
-        case 'none':
-            document.getElementById('colorbar').innerHTML = ''; // hide colorbar
-            break;
-        default:
-            var ncolors = displayInfo[colorPointsBy].nColors;
-            if (ncolors <= 2) {
-                var colorbarHeight = 140;
-            }
-            
-            if (ncolors > 2 && ncolors <= 8) {
-                var colorbarHeight = 250;
-            }
-            
-            if (ncolors > 8 && ncolors <= 15) {
-                var colorbarHeight = 290;
-            }
-            
-            if (ncolors > 18 && ncolors <= 32) {
-                var colorbarHeight = 450;
-            }
-            
-            if (ncolors > 32) {
-                var colorbarHeight = 286;
-            }
-            
-            var stepWidth = (colorbarHeight-30) / ncolors;
-            
-            
-            document.getElementById('colorbar').innerHTML = '<canvas width="350px" height="' + colorbarHeight + 'px" id="cv"></canvas>';
+    if (colormapName == 'none'){
 
-            var cv  = document.getElementById('cv');
-            var    ctx = cv.getContext('2d');
-            
-            console.log('colormap[ColormapName]');
-            console.log(colormap[colormapName]);
-            
-            // fill rectangles
-            var offset = 15;
+        document.getElementById('colorbar').innerHTML = ''; // hide colorbar
+    } else {
+        var ncolors = displayInfo[colorPointsBy].nColors;
+        if (ncolors <= 2) {
+            var colorbarHeight = 140;
+        }
+        
+        if (ncolors > 2 && ncolors <= 8) {
+            var colorbarHeight = 250;
+        }
+        
+        if (ncolors > 8 && ncolors <= 15) {
+            var colorbarHeight = 290;
+        }
+        
+        if (ncolors > 18 && ncolors <= 32) {
+            var colorbarHeight = 450;
+        }
+        
+        if (ncolors > 32) {
+            var colorbarHeight = 286;
+        }
+        
+        var stepWidth = (colorbarHeight-30) / ncolors;
+        
+        
+        document.getElementById('colorbar').innerHTML = '<canvas width="350px" height="' + colorbarHeight + 'px" id="cv"></canvas>';
+
+        var cv  = document.getElementById('cv');
+        var    ctx = cv.getContext('2d');
+        
+        console.log('colormap[ColormapName]');
+        console.log(colormap[colormapName]);
+        
+        // fill rectangles
+        var offset = 15;
+        for (var i = 0; i < ncolors; i++) {
+
+            ctx.beginPath();
+            var currentColor;
+            displayInfo[colorPointsBy].discrete ? currentColor = colormap[colormapName][valueRange[i]] : currentColor = colormap[colormapName][ncolors-i-1];
+            var color = 'rgb(' + Math.round(currentColor[0]*255) + ', ' + Math.round(currentColor[1]*255) + ', ' + Math.round(currentColor[2]*255) + ')';
+            ctx.fillStyle = color;
+            ctx.fillRect(315, offset + i * stepWidth, 35, stepWidth);
+        }
+        
+        // add text legend
+        ctx.font = "13px sans-serif";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign = "end";
+        ctx.textBaseline = "middle"; 
+        ctx.shadowColor = "#000000";
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 1;
+        ctx.shadowBlur = 0;
+        
+        if (!(displayInfo[colorPointsBy].discrete)) {
+        
+            tickStep = (colorbarHeight-30) / 6;
+            valueStep = (valueRange[1] - valueRange[0]) / 7; // write seven ticks
+            for (var i = 0; i < 7; i++) {
+
+                var val = (valueRange[1] - i * valueStep);
+                
+                if (val > 30000) {
+                
+                    ctx.fillText(val.toExponential(4), 308, offset + i * tickStep); // convert value to exponential notation
+                    
+                } else {
+                
+                    ctx.fillText(val.toFixed(1), 308, offset + i * tickStep);
+                    
+                }
+
+            }
+        } else {
             for (var i = 0; i < ncolors; i++) {
-
-                ctx.beginPath();
-                var currentColor;
-                displayInfo[colorPointsBy].discrete ? currentColor = colormap[colormapName][valueRange[i]] : currentColor = colormap[colormapName][ncolors-i-1];
-                var color = 'rgb(' + Math.round(currentColor[0]*255) + ', ' + Math.round(currentColor[1]*255) + ', ' + Math.round(currentColor[2]*255) + ')';
-                ctx.fillStyle = color;
-                ctx.fillRect(315, offset + i * stepWidth, 35, stepWidth);
+                console.log(displayInfo[colorPointsBy].legendText[valueRange[i]]);
+                ctx.fillText(displayInfo[colorPointsBy].legendText[valueRange[i]], 308, offset + (i + 0.5) * stepWidth);
             }
-            
-            // add text legend
-            ctx.font = "13px sans-serif";
-            ctx.fillStyle = "#FFFFFF";
-            ctx.textAlign = "end";
-            ctx.textBaseline = "middle"; 
-            ctx.shadowColor = "#000000";
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 1;
-            ctx.shadowBlur = 0;
-            
-            if (!(displayInfo[colorPointsBy].discrete)) {
-            
-                tickStep = (colorbarHeight-30) / 6;
-                valueStep = (valueRange[1] - valueRange[0]) / 7; // write seven ticks
-                for (var i = 0; i < 7; i++) {
-
-                    var val = (valueRange[1] - i * valueStep);
-                    
-                    if (val > 30000) {
-                    
-                        ctx.fillText(val.toExponential(4), 308, offset + i * tickStep); // convert value to exponential notation
-                        
-                    } else {
-                    
-                        ctx.fillText(val.toFixed(1), 308, offset + i * tickStep);
-                        
-                    }
-
-                }
-            } else {
-                for (var i = 0; i < ncolors; i++) {
-                    console.log(displayInfo[colorPointsBy].legendText[valueRange[i]]);
-                    ctx.fillText(displayInfo[colorPointsBy].legendText[valueRange[i]], 308, offset + (i + 0.5) * stepWidth);
-                }
-            }
-        break;
+        }
     }
 };
 
 PointScope.Renderer.updateAxisDisplay = function() {
     
     document.getElementById('axis_display').checked ? PointScope.Renderer.scene.add(axes) : PointScope.Renderer.scene.remove(axes);
-    render();
+    PointScope.Renderer.render();
     
 };
 
 PointScope.Renderer.updateBoxDisplay = function() {
 
     document.getElementById('bbox_display').checked ? PointScope.Renderer.scene.add(boxHelper) : PointScope.Renderer.scene.remove(boxHelper);
-    render();
+    PointScope.Renderer.render();
     
 };
 
