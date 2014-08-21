@@ -391,7 +391,7 @@ PointScope.PsInterface.printMap = function() {
 
             // add layer switcher
             PointScope.PsInterface.LfControl = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : pc_bbox, 'XY axis' : pc_axis});
-            mymap.addControl(LfControl);
+            mymap.addControl(PointScope.PsInterface.LfControl);
             PointScope.PsInterface.initMapFlag = false;
 
         }
