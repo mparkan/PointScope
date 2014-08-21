@@ -337,15 +337,15 @@ PointScope.Readers.readLAS = function (e) {
     pointCollection.points.Blue = new ArrayBuffer(nEntries * 2);
     
     // create data views
-    var dv1 = new DataView(pointCollection.points.X);
-    var dv2 = new DataView(pointCollection.points.Y);
-    var dv3 = new DataView(pointCollection.points.Z);
-    var dv4 = new DataView(pointCollection.points.Intensity);
-    var dv5 = new DataView(pointCollection.points.SubByteFields);
-    var dv6 = new DataView(pointCollection.points.Classification);
-    var dv7 = new DataView(pointCollection.points['Scan Angle Rank']);
-    var dv8 = new DataView(pointCollection.points['User Data']);
-    var dv9 = new DataView(pointCollection.points['Point Source ID']);
+    PointScope.Renderer.dv1 = new DataView(pointCollection.points.X);
+    PointScope.Renderer.dv2 = new DataView(pointCollection.points.Y);
+    PointScope.Renderer.dv3 = new DataView(pointCollection.points.Z);
+    PointScope.Renderer.dv4 = new DataView(pointCollection.points.Intensity);
+    PointScope.Renderer.dv5 = new DataView(pointCollection.points.SubByteFields);
+    PointScope.Renderer.dv6 = new DataView(pointCollection.points.Classification);
+    PointScope.Renderer.dv7 = new DataView(pointCollection.points['Scan Angle Rank']);
+    PointScope.Renderer.dv8 = new DataView(pointCollection.points['User Data']);
+    PointScope.Renderer.dv9 = new DataView(pointCollection.points['Point Source ID']);
     
     // set values in buffer
     var minVal = 0;
@@ -359,15 +359,15 @@ PointScope.Readers.readLAS = function (e) {
         
         // TO DO: store positions as new THREE.Float32Attribute(num_particles, 3)
         
-        dv1.setInt32(writeOffsetInt32, view.getInt32(current_offset, true), true); // X, long, 4 bytes, *
-        dv2.setInt32(writeOffsetInt32, view.getInt32(current_offset + 4, true), true); // Y, long, 4 bytes, *
-        dv3.setInt32(writeOffsetInt32, view.getInt32(current_offset + 8, true), true); // Z, long, 4 bytes, *
-        dv4.setUint16(writeOffsetUint16, view.getUint16(current_offset + 12, true), true); // Intensity, unsigned short, 2 bytes
-        dv5.setUint8(writeOffsetUint8, view.getUint8(current_offset + 14), true); // Sub byte fields, 1 byte
-        dv6.setUint8(writeOffsetUint8, view.getUint8(current_offset + 15), true); // Classification number (0-31), unsigned char, 1 byte, *
-        dv7.setUint8(writeOffsetUint8, view.getUint8(current_offset + 16), true); // Scan Angle Rank (-90 to +90) – Left side, char, 1 byte, *
-        dv8.setUint8(writeOffsetUint8, view.getUint8(current_offset + 17), true); // User Data, unsigned char, 1 byte 
-        dv9.setUint16(writeOffsetUint16, view.getUint16(current_offset + 18, true), true); // Point Source ID, unsigned short, 2 bytes, *
+        PointScope.Renderer.dv1.setInt32(writeOffsetInt32, view.getInt32(current_offset, true), true); // X, long, 4 bytes, *
+        PointScope.Renderer.dv2.setInt32(writeOffsetInt32, view.getInt32(current_offset + 4, true), true); // Y, long, 4 bytes, *
+        PointScope.Renderer.dv3.setInt32(writeOffsetInt32, view.getInt32(current_offset + 8, true), true); // Z, long, 4 bytes, *
+        PointScope.Renderer.dv4.setUint16(writeOffsetUint16, view.getUint16(current_offset + 12, true), true); // Intensity, unsigned short, 2 bytes
+        PointScope.Renderer.dv5.setUint8(writeOffsetUint8, view.getUint8(current_offset + 14), true); // Sub byte fields, 1 byte
+        PointScope.Renderer.dv6.setUint8(writeOffsetUint8, view.getUint8(current_offset + 15), true); // Classification number (0-31), unsigned char, 1 byte, *
+        PointScope.Renderer.dv7.setUint8(writeOffsetUint8, view.getUint8(current_offset + 16), true); // Scan Angle Rank (-90 to +90) – Left side, char, 1 byte, *
+        PointScope.Renderer.dv8.setUint8(writeOffsetUint8, view.getUint8(current_offset + 17), true); // User Data, unsigned char, 1 byte 
+        PointScope.Renderer.dv9.setUint16(writeOffsetUint16, view.getUint16(current_offset + 18, true), true); // Point Source ID, unsigned short, 2 bytes, *
         
         // find intensity min/max
         view.getUint16(current_offset + 12, true) < minVal ? minVal = view.getUint16(current_offset + 12, true) : null;
@@ -419,17 +419,17 @@ PointScope.Readers.readLAS = function (e) {
     if (pointCollection.publicHeader['Point Data Format ID (0-99 for spec)'] == 2 || pointCollection.publicHeader['Point Data Format ID (0-99 for spec)'] == 3){
         console.log('2 || 3');
         
-        var dv11 = new DataView(pointCollection.points.Red);
-        var dv12 = new DataView(pointCollection.points.Green);
-        var dv13 = new DataView(pointCollection.points.Blue);
+        PointScope.Renderer.dv11 = new DataView(pointCollection.points.Red);
+        PointScope.Renderer.dv12 = new DataView(pointCollection.points.Green);
+        PointScope.Renderer.dv13 = new DataView(pointCollection.points.Blue);
         
         writeOffsetUint16 = 0;
         
         while(current_offset < byteLength){
         
-            dv11.setUint16(writeOffsetUint16, view.getUint16(current_offset + sub_offset + 20, true), true); // Red, unsigned short, 2 bytes, * 
-            dv12.setUint16(writeOffsetUint16, view.getUint16(current_offset + sub_offset + 22, true), true); // Green, unsigned short, 2 bytes, * 
-            dv13.setUint16(writeOffsetUint16, view.getUint16(current_offset + sub_offset + 24, true), true); // Blue, unsigned short, 2 bytes, *
+            PointScope.Renderer.dv11.setUint16(writeOffsetUint16, view.getUint16(current_offset + sub_offset + 20, true), true); // Red, unsigned short, 2 bytes, * 
+            PointScope.Renderer.dv12.setUint16(writeOffsetUint16, view.getUint16(current_offset + sub_offset + 22, true), true); // Green, unsigned short, 2 bytes, * 
+            PointScope.Renderer.dv13.setUint16(writeOffsetUint16, view.getUint16(current_offset + sub_offset + 24, true), true); // Blue, unsigned short, 2 bytes, *
             
             writeOffsetUint16 += 2;
             current_offset += step;

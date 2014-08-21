@@ -195,7 +195,7 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
             case 'las':
                 console.log('file is .las');
                 console.log(e);
-                pointCollection = PointScope.Readers.readLAS(e); // read data from LAS file
+                PointScope.PsInterface.pointCollection = PointScope.Readers.readLAS(e); // read data from LAS file
                 break;
             default:
                 alert('unsupported file format!');
@@ -207,11 +207,11 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
         if (PointScope.PsInterface.validFormatFlag) {
 
             // render the point cloud
-            PointScope.PsInterface.init(pointCollection);
+            PointScope.PsInterface.init();
             PointScope.Renderer.animate();
 
             // update right panel
-            PointScope.PsInterface.printMetadata(file, pointCollection);
+            PointScope.PsInterface.printMetadata(file, PointScope.PsInterface.pointCollection);
             PointScope.PsInterface.printDownload();
 
             // update map
@@ -301,7 +301,7 @@ PointScope.PsInterface.printDownload = function() {
               '</tr>'+
               '<tr>'+
                 '<td><a href="data:' + "text/json;charset=utf-8," + encodeURIComponent(PointScope.Renderer.bbox_local_srs) + '" download="PointScope.Renderer.bbox_local_srs.geojson"><b>planimetric bounding box</b></a></td>'+
-                '<td>'+ pointCollection.computedMetadata.SRID +'</td>'+
+                '<td>'+ PointScope.PsInterface.pointCollection.computedMetadata.SRID +'</td>'+
                 '<td>geojson</td>'+
               '</tr>'+
             '</tbody>'+
@@ -334,7 +334,7 @@ PointScope.PsInterface.printMap = function() {
             console.log('reset map');
 
             // create bounding box layer
-            pc_bbox = L.geoJson(PointScope.Renderer.mapBoundingBox, {
+            PointScope.PsInterface.pc_bbox = L.geoJson(PointScope.Renderer.mapBoundingBox, {
                 style: {stroke: true,
                         weight: 3,
                         color: '#FFFF00',
@@ -349,7 +349,7 @@ PointScope.PsInterface.printMap = function() {
 
             // create xy axis layer
 
-            pc_axis = L.geoJson(PointScope.Renderer.mapAxis, {
+            PointScope.PsInterface.pc_axis = L.geoJson(PointScope.Renderer.mapAxis, {
                 style: function (feature) {
                             return {
                                 weight: 2,
@@ -375,8 +375,8 @@ PointScope.PsInterface.printMap = function() {
             var ggl2 = new L.Google('TERRAIN');
 
             // add map
-            mymap = L.map('minimap', {
-                layers: [ggl, pc_bbox, pc_axis] //
+            PointScope.PsInterface.LfMap = L.map('minimap', {
+                layers: [ggl, PointScope.PsInterface.pc_bbox, PointScope.PsInterface.pc_axis] //
             });
 
             // add scale bar
@@ -387,47 +387,47 @@ PointScope.PsInterface.printMap = function() {
                     metric: true,
                     imperial: false
                 }
-            ).addTo(mymap);
+            ).addTo(PointScope.PsInterface.LfMap);
 
             // add layer switcher
-            PointScope.PsInterface.LfControl = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : pc_bbox, 'XY axis' : pc_axis});
-            mymap.addControl(PointScope.PsInterface.LfControl);
+            PointScope.PsInterface.LfControl = new L.Control.Layers( {'OSM':osm, 'Google':ggl, 'Google Terrain':ggl2}, {'Bounding box' : PointScope.PsInterface.pc_bbox, 'XY axis' : PointScope.PsInterface.pc_axis});
+            PointScope.PsInterface.LfMap.addControl(PointScope.PsInterface.LfControl);
             PointScope.PsInterface.initMapFlag = false;
 
         }
 
-        if (mymap.hasLayer(pc_bbox)){
+        if (PointScope.PsInterface.LfMap.hasLayer(PointScope.PsInterface.pc_bbox)){
 
-            mymap.removeLayer(pc_bbox); //remove layer from the map
-            pc_bbox.clearLayers(); // clear data from layer
+            PointScope.PsInterface.LfMap.removeLayer(PointScope.PsInterface.pc_bbox); //remove layer from the map
+            PointScope.PsInterface.pc_bbox.clearLayers(); // clear data from layer
             console.log('pc_bbox empty');
-            console.log(pc_bbox);
+            console.log(PointScope.PsInterface.pc_bbox);
             
-            pc_bbox.addData(PointScope.Renderer.mapBoundingBox);
-            mymap.addLayer(pc_bbox);
+            PointScope.PsInterface.pc_bbox.addData(PointScope.Renderer.mapBoundingBox);
+            PointScope.PsInterface.LfMap.addLayer(PointScope.PsInterface.pc_bbox);
             console.log('pc_bbox');
-            console.log(pc_bbox);
-            console.log('hasLayer(pc_bbox): ' + mymap.hasLayer(pc_bbox));
+            console.log(PointScope.PsInterface.pc_bbox);
+            console.log('hasLayer(pc_bbox): ' + PointScope.PsInterface.LfMap.hasLayer(PointScope.PsInterface.pc_bbox));
 
         }
 
-        if (mymap.hasLayer(pc_axis)){
+        if (PointScope.PsInterface.LfMap.hasLayer(PointScope.PsInterface.pc_axis)){
 
-            mymap.removeLayer(pc_axis); //remove layer from the map
-            pc_axis.clearLayers(); // clear data from layer
+            PointScope.PsInterface.LfMap.removeLayer(PointScope.PsInterface.pc_axis); //remove layer from the map
+            PointScope.PsInterface.pc_axis.clearLayers(); // clear data from layer
             console.log('pc_axis empty');
-            console.log(pc_axis);
+            console.log(PointScope.PsInterface.pc_axis);
             
-            pc_axis.addData(PointScope.Renderer.mapAxis);
-            mymap.addLayer(pc_axis);
+            PointScope.PsInterface.pc_axis.addData(PointScope.Renderer.mapAxis);
+            PointScope.PsInterface.LfMap.addLayer(PointScope.PsInterface.pc_axis);
             console.log('pc_axis');
-            console.log(pc_axis);
-            console.log('hasLayer(pc_axis): ' + mymap.hasLayer(pc_axis));
+            console.log(PointScope.PsInterface.pc_axis);
+            console.log('hasLayer(pc_axis): ' + PointScope.PsInterface.LfMap.hasLayer(PointScope.PsInterface.pc_axis));
 
         }
 
         // fit view to object bounds
-        mymap.fitBounds(pc_bbox.getBounds());
+        PointScope.PsInterface.LfMap.fitBounds(PointScope.PsInterface.pc_bbox.getBounds());
 
     } else {
 
@@ -444,20 +444,20 @@ PointScope.PsInterface.printMap = function() {
  * method to print metadata
  *
  */
-PointScope.PsInterface.printMetadata = function(file, pointCollection) {
+PointScope.PsInterface.printMetadata = function(file) {
 
     document.getElementById('metadata_filename').innerHTML = file.name;
     document.getElementById('metadata_date_modification').innerHTML = file.lastModifiedDate;
-    document.getElementById('metadata_npoints').innerHTML = pointCollection.computedMetadata['Number of point records'];
+    document.getElementById('metadata_npoints').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata['Number of point records'];
 
-    document.getElementById('metadata_xextent').innerHTML = pointCollection.computedMetadata['X min'].toFixed(2) + ', ' + pointCollection.computedMetadata['X max'].toFixed(2);
-    document.getElementById('metadata_yextent').innerHTML = pointCollection.computedMetadata['Y min'].toFixed(2) + ', ' + pointCollection.computedMetadata['Y max'].toFixed(2);
-    document.getElementById('metadata_zextent').innerHTML = pointCollection.computedMetadata['Z min'].toFixed(2) + ', ' + pointCollection.computedMetadata['Z max'].toFixed(2);
+    document.getElementById('metadata_xextent').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata['X min'].toFixed(2) + ', ' + PointScope.PsInterface.pointCollection.computedMetadata['X max'].toFixed(2);
+    document.getElementById('metadata_yextent').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata['Y min'].toFixed(2) + ', ' + PointScope.PsInterface.pointCollection.computedMetadata['Y max'].toFixed(2);
+    document.getElementById('metadata_zextent').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata['Z min'].toFixed(2) + ', ' + PointScope.PsInterface.pointCollection.computedMetadata['Z max'].toFixed(2);
 
-    document.getElementById('metadata_software').innerHTML = pointCollection.publicHeader['Generating Software'];
+    document.getElementById('metadata_software').innerHTML = PointScope.PsInterface.pointCollection.publicHeader['Generating Software'];
     
-    document.getElementById('metadata_srid').innerHTML = pointCollection.computedMetadata.SRID + ' (' + pointCollection.computedMetadata.SRID + ')'; 
-    document.getElementById('metadata_srs').innerHTML = pointCollection.computedMetadata.SRID;
+    document.getElementById('metadata_srid').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata.SRID + ' (' + PointScope.PsInterface.pointCollection.computedMetadata.SRID + ')'; 
+    document.getElementById('metadata_srs').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata.SRID;
 
 };
 

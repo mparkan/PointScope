@@ -36,26 +36,28 @@ PointScope.Renderer.setSRS = function () {
             srid = document.getElementById('userSRS').value;
         }
         
-        pointCollection.computedMetadata.SRID = srid ;
-        pointCollection.computedMetadata.SRN = PointScope.Projections.prjdefs[srid][0];
-        pointCollection.computedMetadata.SRN = PointScope.Projections.prjdefs[srid][1];
+        
+        
+        PointScope.PsInterface.pointCollection.computedMetadata.SRID = srid ;
+        PointScope.PsInterface.pointCollection.computedMetadata.SRN = PointScope.Projections.prjdefs[srid][0];
+        PointScope.PsInterface.pointCollection.computedMetadata.SRN = PointScope.Projections.prjdefs[srid][1];
 
         // create map bounding box
         var type = "FeatureCollection";
         var crs = {"name":"urn:ogc:def:crs:EPSG::" + srid.substring(5)};
         var features = [{"type":"Feature","properties":{"name":"bounding box"},"geometry":{"type":"Polygon","coordinates":[[
-            [pointCollection.computedMetadata['X min'], pointCollection.computedMetadata['Y min']],
-            [pointCollection.computedMetadata['X min'], pointCollection.computedMetadata['Y max']],
-            [pointCollection.computedMetadata['X max'], pointCollection.computedMetadata['Y max']],
-            [pointCollection.computedMetadata['X max'], pointCollection.computedMetadata['Y min']],
-            [pointCollection.computedMetadata['X min'], pointCollection.computedMetadata['Y min']]]]}}];
+            [PointScope.PsInterface.pointCollection.computedMetadata['X min'], PointScope.PsInterface.pointCollection.computedMetadata['Y min']],
+            [PointScope.PsInterface.pointCollection.computedMetadata['X min'], PointScope.PsInterface.pointCollection.computedMetadata['Y max']],
+            [PointScope.PsInterface.pointCollection.computedMetadata['X max'], PointScope.PsInterface.pointCollection.computedMetadata['Y max']],
+            [PointScope.PsInterface.pointCollection.computedMetadata['X max'], PointScope.PsInterface.pointCollection.computedMetadata['Y min']],
+            [PointScope.PsInterface.pointCollection.computedMetadata['X min'], PointScope.PsInterface.pointCollection.computedMetadata['Y min']]]]}}];
 
         PointScope.Renderer.mapBoundingBox = new PointScope.PsInterface.geoJSON(type, crs, features);
         console.log('mapBoundingBox');
         console.log(PointScope.Renderer.mapBoundingBox);
 
         // create map axis
-        var axisLength = Math.max(pointCollection.computedMetadata['X size'], pointCollection.computedMetadata['Y size'], pointCollection.computedMetadata['Z size']);
+        var axisLength = Math.max(PointScope.PsInterface.pointCollection.computedMetadata['X size'], PointScope.PsInterface.pointCollection.computedMetadata['Y size'], PointScope.PsInterface.pointCollection.computedMetadata['Z size']);
 
         console.log('axisLength');
         console.log(axisLength);
@@ -64,13 +66,13 @@ PointScope.Renderer.setSRS = function () {
         crs = {"name":"urn:ogc:def:crs:EPSG::" + srid.substring(5)};
         features = [
             { "type": "Feature", "properties": {"color" : "#FF0000"}, "geometry": {"type": "LineString", "coordinates": [
-                [pointCollection.computedMetadata['X center'], pointCollection.computedMetadata['Y center']], 
-                [pointCollection.computedMetadata['X center'] + axisLength, pointCollection.computedMetadata['Y center']] 
+                [PointScope.PsInterface.pointCollection.computedMetadata['X center'], PointScope.PsInterface.pointCollection.computedMetadata['Y center']], 
+                [PointScope.PsInterface.pointCollection.computedMetadata['X center'] + axisLength, PointScope.PsInterface.pointCollection.computedMetadata['Y center']] 
                 ]
             }},
             { "type": "Feature", "properties": {"color" : "#00FF00"}, "geometry": {"type": "LineString", "coordinates": [
-                [pointCollection.computedMetadata['X center'], pointCollection.computedMetadata['Y center']], 
-                [pointCollection.computedMetadata['X center'], pointCollection.computedMetadata['Y center'] + axisLength] 
+                [PointScope.PsInterface.pointCollection.computedMetadata['X center'], PointScope.PsInterface.pointCollection.computedMetadata['Y center']], 
+                [PointScope.PsInterface.pointCollection.computedMetadata['X center'], PointScope.PsInterface.pointCollection.computedMetadata['Y center'] + axisLength] 
                 ]
             }}
         ];
@@ -96,8 +98,8 @@ PointScope.Renderer.setSRS = function () {
         console.log(axis_global_srs);
 
         // update metadata display
-        document.getElementById('metadata_srid').innerHTML = pointCollection.computedMetadata.SRN + ' (' + pointCollection.computedMetadata.SRID + ')'; 
-        document.getElementById('metadata_srs').innerHTML = pointCollection.computedMetadata.SRS;
+        document.getElementById('metadata_srid').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata.SRN + ' (' + PointScope.PsInterface.pointCollection.computedMetadata.SRID + ')'; 
+        document.getElementById('metadata_srs').innerHTML = PointScope.PsInterface.pointCollection.computedMetadata.SRS;
 
         // update projection availability flag
         PointScope.PsInterface.projFlag = true;
@@ -122,7 +124,7 @@ PointScope.Renderer.setSRS = function () {
     
 };
 
-PointScope.PsInterface.init = function (pointCollection) {
+PointScope.PsInterface.init = function () {
 
     if (PointScope.PsInterface.resetFlag){
 
@@ -206,7 +208,7 @@ PointScope.PsInterface.init = function (pointCollection) {
     PointScope.Renderer.scene = new THREE.Scene();
 
     // render particles 
-    PointScope.Renderer.num_particles = Math.round(1*pointCollection.computedMetadata['Number of point records']);
+    PointScope.Renderer.num_particles = Math.round(1 * PointScope.PsInterface.pointCollection.computedMetadata['Number of point records']);
     console.log('N part: '  + PointScope.Renderer.num_particles);
     
     // check number of points
@@ -234,18 +236,18 @@ PointScope.PsInterface.init = function (pointCollection) {
     });
     
     // create data views
-    dv1 = new DataView(pointCollection.points.X);
-    dv2 = new DataView(pointCollection.points.Y);
-    dv3 = new DataView(pointCollection.points.Z);
-    dv4 = new DataView(pointCollection.points.Intensity);
-    dv5 = new DataView(pointCollection.points.SubByteFields);
-    dv6 = new DataView(pointCollection.points.Classification);
-    //dv7 = new DataView(pointCollection.points['Scan Angle Rank']);
-    //dv8 = new DataView(pointCollection.points['User Data']);
-    //dv9 = new DataView(pointCollection.points['Point Source ID']);
-    dv11 = new DataView(pointCollection.points.Red);
-    dv12 = new DataView(pointCollection.points.Green);
-    dv13 = new DataView(pointCollection.points.Blue);
+    PointScope.Renderer.dv1 = new DataView(PointScope.PsInterface.pointCollection.points.X);
+    PointScope.Renderer.dv2 = new DataView(PointScope.PsInterface.pointCollection.points.Y);
+    PointScope.Renderer.dv3 = new DataView(PointScope.PsInterface.pointCollection.points.Z);
+    PointScope.Renderer.dv4 = new DataView(PointScope.PsInterface.pointCollection.points.Intensity);
+    PointScope.Renderer.dv5 = new DataView(PointScope.PsInterface.pointCollection.points.SubByteFields);
+    PointScope.Renderer.dv6 = new DataView(PointScope.PsInterface.pointCollection.points.Classification);
+    //dv7 = new DataView(PointScope.PsInterface.pointCollection.points['Scan Angle Rank']);
+    //dv8 = new DataView(PointScope.PsInterface.pointCollection.points['User Data']);
+    //dv9 = new DataView(PointScope.PsInterface.pointCollection.points['Point Source ID']);
+    PointScope.Renderer.dv11 = new DataView(PointScope.PsInterface.pointCollection.points.Red);
+    PointScope.Renderer.dv12 = new DataView(PointScope.PsInterface.pointCollection.points.Green);
+    PointScope.Renderer.dv13 = new DataView(PointScope.PsInterface.pointCollection.points.Blue);
     
     // set point positions and size
     PointScope.Renderer.geometry = new THREE.BufferGeometry();
@@ -256,9 +258,9 @@ PointScope.PsInterface.init = function (pointCollection) {
     var writeOffsetInt32 = 0;
     for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
         // set point position
-        PointScope.Renderer.positions[k]     = dv1.getInt32(writeOffsetInt32, true) * pointCollection.publicHeader['X scale factor'] + pointCollection.publicHeader['X offset']; //x
-        PointScope.Renderer.positions[k + 1] = dv2.getInt32(writeOffsetInt32, true) * pointCollection.publicHeader['Y scale factor'] + pointCollection.publicHeader['Y offset']; //y
-        PointScope.Renderer.positions[k + 2] = dv3.getInt32(writeOffsetInt32, true) * pointCollection.publicHeader['Z scale factor'] + pointCollection.publicHeader['Z offset']; //z
+        PointScope.Renderer.positions[k]     = PointScope.Renderer.dv1.getInt32(writeOffsetInt32, true) * PointScope.PsInterface.pointCollection.publicHeader['X scale factor'] + PointScope.PsInterface.pointCollection.publicHeader['X offset']; //x
+        PointScope.Renderer.positions[k + 1] = PointScope.Renderer.dv2.getInt32(writeOffsetInt32, true) * PointScope.PsInterface.pointCollection.publicHeader['Y scale factor'] + PointScope.PsInterface.pointCollection.publicHeader['Y offset']; //y
+        PointScope.Renderer.positions[k + 2] = PointScope.Renderer.dv3.getInt32(writeOffsetInt32, true) * PointScope.PsInterface.pointCollection.publicHeader['Z scale factor'] + PointScope.PsInterface.pointCollection.publicHeader['Z offset']; //z
         k += 3;
         writeOffsetInt32 += 4;
     }
@@ -282,45 +284,45 @@ PointScope.PsInterface.init = function (pointCollection) {
     var boundingBoxSize = PointScope.Renderer.geometry.boundingBox.size();
     console.log('bounding box: ' + JSON.stringify(boundingBoxSize)); 
 
-    pointCollection.computedMetadata['Number of point records'] = PointScope.Renderer.num_particles;
-    pointCollection.computedMetadata['X min'] = PointScope.Renderer.geometry.boundingBox.min.x;
-    pointCollection.computedMetadata['X max'] = PointScope.Renderer.geometry.boundingBox.max.x;
-    pointCollection.computedMetadata['Y min'] = PointScope.Renderer.geometry.boundingBox.min.y;
-    pointCollection.computedMetadata['Y max'] = PointScope.Renderer.geometry.boundingBox.max.y;
-    pointCollection.computedMetadata['Z min'] = PointScope.Renderer.geometry.boundingBox.min.z;
-    pointCollection.computedMetadata['Z max'] = PointScope.Renderer.geometry.boundingBox.max.z;
-    pointCollection.computedMetadata['X center'] = PointScope.Renderer.geometry.boundingBox.max.x - boundingBoxSize.x / 2;
-    pointCollection.computedMetadata['Y center'] = PointScope.Renderer.geometry.boundingBox.max.y - boundingBoxSize.y / 2;
-    pointCollection.computedMetadata['Z center'] = PointScope.Renderer.geometry.boundingBox.max.z - boundingBoxSize.z / 2;
-    pointCollection.computedMetadata['X size'] = boundingBoxSize.x;
-    pointCollection.computedMetadata['Y size'] = boundingBoxSize.y;
-    pointCollection.computedMetadata['Z size'] = boundingBoxSize.z;
+    PointScope.PsInterface.pointCollection.computedMetadata['Number of point records'] = PointScope.Renderer.num_particles;
+    PointScope.PsInterface.pointCollection.computedMetadata['X min'] = PointScope.Renderer.geometry.boundingBox.min.x;
+    PointScope.PsInterface.pointCollection.computedMetadata['X max'] = PointScope.Renderer.geometry.boundingBox.max.x;
+    PointScope.PsInterface.pointCollection.computedMetadata['Y min'] = PointScope.Renderer.geometry.boundingBox.min.y;
+    PointScope.PsInterface.pointCollection.computedMetadata['Y max'] = PointScope.Renderer.geometry.boundingBox.max.y;
+    PointScope.PsInterface.pointCollection.computedMetadata['Z min'] = PointScope.Renderer.geometry.boundingBox.min.z;
+    PointScope.PsInterface.pointCollection.computedMetadata['Z max'] = PointScope.Renderer.geometry.boundingBox.max.z;
+    PointScope.PsInterface.pointCollection.computedMetadata['X center'] = PointScope.Renderer.geometry.boundingBox.max.x - boundingBoxSize.x / 2;
+    PointScope.PsInterface.pointCollection.computedMetadata['Y center'] = PointScope.Renderer.geometry.boundingBox.max.y - boundingBoxSize.y / 2;
+    PointScope.PsInterface.pointCollection.computedMetadata['Z center'] = PointScope.Renderer.geometry.boundingBox.max.z - boundingBoxSize.z / 2;
+    PointScope.PsInterface.pointCollection.computedMetadata['X size'] = boundingBoxSize.x;
+    PointScope.PsInterface.pointCollection.computedMetadata['Y size'] = boundingBoxSize.y;
+    PointScope.PsInterface.pointCollection.computedMetadata['Z size'] = boundingBoxSize.z;
 
     // delete geometry
     
     // get Proj4 definition from SRID
-    switch (pointCollection.variableLengthHeader.GeoKeyDirectoryTag === null){
+    switch (PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag === null){
         case true:
 
             // SRS is undefined
             $('#SRSModal').modal('show'); // ask user to specify SRS
-            pointCollection.computedMetadata.SRID = undefined; 
-            pointCollection.computedMetadata.SRN = undefined; 
-            pointCollection.computedMetadata.SRS = undefined;
+            PointScope.PsInterface.pointCollection.computedMetadata.SRID = undefined; 
+            PointScope.PsInterface.pointCollection.computedMetadata.SRN = undefined; 
+            PointScope.PsInterface.pointCollection.computedMetadata.SRS = undefined;
             PointScope.PsInterface.projFlag = false;
             break;
 
         case false:
 
             // SRS is defined
-            if (!(pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'] === undefined)){
-                srid = 'EPSG:' + pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'].wValue_Offset;
+            if (!(PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'] === undefined)){
+                srid = 'EPSG:' + PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'].wValue_Offset;
                 PointScope.PsInterface.projFlag = true;
                 setSRS();
             }
 
-            if (!(pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'] === undefined)){
-                srid = 'EPSG:' + pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'].wValue_Offset;
+            if (!(PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'] === undefined)){
+                srid = 'EPSG:' + PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'].wValue_Offset;
                 PointScope.PsInterface.projFlag = true;
                 setSRS();
             }
@@ -351,9 +353,9 @@ PointScope.PsInterface.init = function (pointCollection) {
     PointScope.Renderer.displayInfo = {
 
         'RGB' : {'colormapName' : 'none', 'discrete' : false, 'nColors' : 256 , 'valueRange' : undefined, 'legendText' : undefined},
-        'Elevation' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [pointCollection.computedMetadata['Z min'], pointCollection.computedMetadata['Z max']], 'legendText' : undefined},
-        'Intensity' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [pointCollection.computedMetadata['Intensity min'], pointCollection.computedMetadata['Intensity max']], 'legendText' : undefined},
-        'Classification' : {'colormapName' : 'classification', 'discrete' : true, 'nColors' : pointCollection.computedMetadata['Unique classes'].length, 'valueRange' : pointCollection.computedMetadata['Unique classes'], 'legendText' : 
+        'Elevation' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [PointScope.PsInterface.pointCollection.computedMetadata['Z min'], PointScope.PsInterface.pointCollection.computedMetadata['Z max']], 'legendText' : undefined},
+        'Intensity' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [PointScope.PsInterface.pointCollection.computedMetadata['Intensity min'], PointScope.PsInterface.pointCollection.computedMetadata['Intensity max']], 'legendText' : undefined},
+        'Classification' : {'colormapName' : 'classification', 'discrete' : true, 'nColors' : PointScope.PsInterface.pointCollection.computedMetadata['Unique classes'].length, 'valueRange' : PointScope.PsInterface.pointCollection.computedMetadata['Unique classes'], 'legendText' : 
         {'0' : '0', '1' : '1', '2' : '2', '3' : '3', '4' : '4', '5' : '5', '6' : '6', '7' : '7', '8' : '8', '9' : '9', '10' : '10', '11' : '11', '12' : '12', '13' : '13', '14' : '14', '15' : '15', '16' : '16', 
         '17' : '17', '18' : '18', '19' : '19', '20' : '20', '21' : '21', '22' : '22', '23' : '23', '24' : '24', '25' : '25', '26' : '26', '27' : '27', '28' : '28', '29' : '29', '30' : '30', '31' : '31'}},
         'ReturnNumber' : {'colormapName' : 'five', 'discrete' : true, 'nColors' : 5, 'valueRange' : [0, 1, 2, 3, 4], 'legendText' : {'0' : '1', '1' : '2', '2' : '3', '3' : '4', '4' : '5'}},
@@ -492,9 +494,9 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             writeOffsetUint16 = 0;
             k = 0;
             for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-                PointScope.Renderer.colors[k] = dv11.getUint16(writeOffsetUint16, true)/32767; 
-                PointScope.Renderer.colors[k + 1] = dv12.getUint16(writeOffsetUint16, true)/32767;
-                PointScope.Renderer.colors[k + 2] = dv13.getUint16(writeOffsetUint16, true)/32767;
+                PointScope.Renderer.colors[k] = PointScope.Renderer.dv11.getUint16(writeOffsetUint16, true)/32767; 
+                PointScope.Renderer.colors[k + 1] = PointScope.Renderer.dv12.getUint16(writeOffsetUint16, true)/32767;
+                PointScope.Renderer.colors[k + 2] = PointScope.Renderer.dv13.getUint16(writeOffsetUint16, true)/32767;
                 k += 3;
                 writeOffsetUint16 += 2;
             }
@@ -507,7 +509,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             writeOffsetUint8 = 0;
             k = 0;
             for ( var i = 0; i < PointScope.Renderer.num_particles-2; i++ ) {
-                var currentColor = PointScope.Colormaps.colormap[colormapName][dv6.getUint8(writeOffsetUint8, true) & 31];
+                var currentColor = PointScope.Colormaps.colormap[colormapName][PointScope.Renderer.dv6.getUint8(writeOffsetUint8, true) & 31];
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -518,7 +520,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
         case 'Elevation':
             console.log('Elevation');
             colormapName = 'jet';
-            valueRange = [pointCollection.computedMetadata['Z min'], pointCollection.computedMetadata['Z max']];
+            valueRange = [PointScope.PsInterface.pointCollection.computedMetadata['Z min'], PointScope.PsInterface.pointCollection.computedMetadata['Z max']];
             legendText = {};
             k = 0;
             var scaled_max = PointScope.Renderer.geometry.boundingBox.max.z - PointScope.Renderer.geometry.boundingBox.min.z;
@@ -533,15 +535,15 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
         case 'Intensity':
             console.log('Intensity');
             colormapName = 'jet';
-            valueRange = [pointCollection.computedMetadata['Intensity min'], pointCollection.computedMetadata['Intensity max']];
+            valueRange = [PointScope.PsInterface.pointCollection.computedMetadata['Intensity min'], PointScope.PsInterface.pointCollection.computedMetadata['Intensity max']];
             legendText = {};
             writeOffsetUint16 = 0;
             k = 0;
-            var scaled_intensity =     pointCollection.computedMetadata['Intensity max'] -    pointCollection.computedMetadata['Intensity min'];
+            var scaled_intensity = PointScope.PsInterface.pointCollection.computedMetadata['Intensity max'] - PointScope.PsInterface.pointCollection.computedMetadata['Intensity min'];
             scaled_intensity === 0 ? scaled_intensity = 1 : null;
             
             for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-                var currentColor = PointScope.Colormaps.colormap[colormapName][Math.round(255*(dv4.getUint16(writeOffsetUint16, true) -    pointCollection.computedMetadata['Intensity min'] )/scaled_intensity)];
+                var currentColor = PointScope.Colormaps.colormap[colormapName][Math.round(255*(PointScope.Renderer.dv4.getUint16(writeOffsetUint16, true) -    PointScope.PsInterface.pointCollection.computedMetadata['Intensity min'] )/scaled_intensity)];
                 PointScope.Renderer.colors[k]     = currentColor[0];
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -556,7 +558,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             writeOffsetUint8 = 0;
             k = 0;
             for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-                var currentColor = PointScope.Colormaps.colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) & 7)-1]; // Return Number, 3 bits (bits 0, 1, 2), 3 bits, * 
+                var currentColor = PointScope.Colormaps.colormap[colormapName][(PointScope.Renderer.dv5.getUint8(writeOffsetUint8, true) & 7)-1]; // Return Number, 3 bits (bits 0, 1, 2), 3 bits, * 
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
@@ -572,7 +574,7 @@ PointScope.Renderer.updatePointColors = function(renderOn) {
             writeOffsetUint8 = 0;
             k = 0;
             for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-                var currentColor = PointScope.Colormaps.colormap[colormapName][(dv5.getUint8(writeOffsetUint8, true) >> 7) & 1];
+                var currentColor = PointScope.Colormaps.colormap[colormapName][(PointScope.Renderer.dv5.getUint8(writeOffsetUint8, true) >> 7) & 1];
                 PointScope.Renderer.colors[k]     = currentColor[0]; 
                 PointScope.Renderer.colors[k + 1] = currentColor[1];
                 PointScope.Renderer.colors[k + 2] = currentColor[2];
