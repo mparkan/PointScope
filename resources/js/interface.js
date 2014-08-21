@@ -226,7 +226,9 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
  *
  */
 PointScope.PsInterface.abortRead = function() {
-    PointScope.PsInterface.reader.abort();
+    if (PointScope.PsInterface.reader) {
+        PointScope.PsInterface.reader.abort();
+    }
 };
 
   /**

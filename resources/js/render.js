@@ -318,13 +318,13 @@ PointScope.PsInterface.init = function () {
             if (!(PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'] === undefined)){
                 srid = 'EPSG:' + PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['3072'].wValue_Offset;
                 PointScope.PsInterface.projFlag = true;
-                setSRS();
+                PointScope.Renderer.setSRS();
             }
 
             if (!(PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'] === undefined)){
                 srid = 'EPSG:' + PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag.pKeys.wKeyID['2048'].wValue_Offset;
                 PointScope.PsInterface.projFlag = true;
-                setSRS();
+                PointScope.Renderer.setSRS();
             }
 
             break;
@@ -408,10 +408,10 @@ PointScope.Renderer.onWindowResize = function() {
     
     PointScope.Renderer.camera.aspect = document.getElementById("container").offsetWidth / window.innerHeight;
     PointScope.Renderer.camera.updateProjectionMatrix();
-    renderer.setSize( document.getElementById("container").offsetWidth, window.innerHeight );
+    PointScope.Renderer.renderer.setSize( document.getElementById("container").offsetWidth, window.innerHeight );
     //controls.handleResize();
         
-    render();
+    PointScope.Renderer.render();
 
 };
 
@@ -684,7 +684,7 @@ PointScope.Renderer.updateColorbar = function(colorPointsBy) {
         
         if (!(PointScope.Renderer.displayInfo[colorPointsBy].discrete)) {
         
-            tickStep = (colorbarHeight-30) / 6;
+            var tickStep = (colorbarHeight-30) / 6;
             valueStep = (valueRange[1] - valueRange[0]) / 7; // write seven ticks
             for (var i = 0; i < 7; i++) {
 
