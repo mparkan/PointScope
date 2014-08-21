@@ -1,3 +1,6 @@
 [submodule "vendors/three"]
 	path = vendors/three
 	url = git://github.com/mrdoob/three.js.git
+[submodule "vendors/potree"]
+	path = vendors/potree
+	url = git://github.com/potree/potree.git
