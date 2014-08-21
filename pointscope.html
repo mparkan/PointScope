@@ -41,634 +41,634 @@ toggle colorbar
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>PointScope - point cloud viewer</title>
-	<link rel="stylesheet" href="vendors/bootstrap-3.1.1-dist/css/bootstrap.min.css" type='text/css'>
-	<link rel="stylesheet" href="vendors/leaflet/leaflet.css" type='text/css'>
-	<link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Ubuntu+Mono|Ubuntu:700' type='text/css'>
-	<link rel="stylesheet" href="resources/css/pointscope.css" type='text/css'>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>PointScope - point cloud viewer</title>
+    <link rel="stylesheet" href="vendors/bootstrap-3.1.1-dist/css/bootstrap.min.css" type='text/css'>
+    <link rel="stylesheet" href="vendors/leaflet/leaflet.css" type='text/css'>
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Ubuntu+Mono|Ubuntu:700' type='text/css'>
+    <link rel="stylesheet" href="resources/css/pointscope.css" type='text/css'>
 
-	
-	<script type="text/javascript" src="vendors/jquery-2.1.0.min.js"></script>
-	<script type="text/javascript" src="vendors/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript" src="vendors/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="vendors/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
 
-	<script type="text/javascript" src="vendors/proj4/dist/proj4.js"></script>
-	<script type="text/javascript" src="resources/js/prjdefs.js"></script>
+    <script type="text/javascript" src="vendors/proj4/dist/proj4.js"></script>
+    <script type="text/javascript" src="resources/js/prjdefs.js"></script>
 
-	<script type="text/javascript" src="vendors/leaflet/leaflet.js"></script>
-	<script src="http://maps.google.com/maps/api/js?v=3&sensor=false"></script>
-	<script type="text/javascript" src="vendors/leaflet-plugins-master/layer/tile/Google.js"></script>
+    <script type="text/javascript" src="vendors/leaflet/leaflet.js"></script>
+    <script src="http://maps.google.com/maps/api/js?v=3&sensor=false"></script>
+    <script type="text/javascript" src="vendors/leaflet-plugins-master/layer/tile/Google.js"></script>
 
-	<script type="text/javascript" src="resources/js/colormap.js"></script>
-	<script type="text/javascript" src="resources/js/interface.js"></script>
-	<script type="text/javascript" src="resources/js/readLAS.js"></script>
-	<script type="text/javascript" src="resources/js/readCSV.js"></script>
-	<script type="text/javascript" src="resources/js/render.js"></script>
+    <script type="text/javascript" src="resources/js/colormap.js"></script>
+    <script type="text/javascript" src="resources/js/interface.js"></script>
+    <script type="text/javascript" src="resources/js/readLAS.js"></script>
+    <script type="text/javascript" src="resources/js/readCSV.js"></script>
+    <script type="text/javascript" src="resources/js/render.js"></script>
 
-	<script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/build/three.min.js"></script>
-	<script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/TrackballControls.js"></script>
-	<script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/FlyControls.js"></script>
-	<script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/FirstPersonControls.js"></script>
-	<script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/Detector.js"></script>
-	<script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/TypedArrayUtils.js"></script>
+    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/build/three.min.js"></script>
+    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/TrackballControls.js"></script>
+    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/FlyControls.js"></script>
+    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/FirstPersonControls.js"></script>
+    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/Detector.js"></script>
+    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/TypedArrayUtils.js"></script>
 
-	<script type="x-shader/x-vertex" id="vertexshader">
+    <script type="x-shader/x-vertex" id="vertexshader">
 
-		uniform float size; // set same size for all points
-		
-		attribute vec3 customColor;
-		// attribute float size; // set size individually for each point
-		
-		varying vec3 vColor;
-		
-		void main() {
-			
-			/**
-			 * Multiply each vertex by the model-view matrix
-			 * and the projection matrix (both provided by
-			 * Three.js) to get a final vertex position
-			 */
-			vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-			gl_Position = projectionMatrix * mvPosition;
-			
-			// set custom color
-			vColor = customColor;
-			
-			// set custom transparency
-			// vAlpha = alpha;
-			
-			// set custom point size
-			gl_PointSize = size;
-			
-		}
+        uniform float size; // set same size for all points
+        
+        attribute vec3 customColor;
+        // attribute float size; // set size individually for each point
+        
+        varying vec3 vColor;
+        
+        void main() {
+            
+            /**
+             * Multiply each vertex by the model-view matrix
+             * and the projection matrix (both provided by
+             * Three.js) to get a final vertex position
+             */
+            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+            gl_Position = projectionMatrix * mvPosition;
+            
+            // set custom color
+            vColor = customColor;
+            
+            // set custom transparency
+            // vAlpha = alpha;
+            
+            // set custom point size
+            gl_PointSize = size;
+            
+        }
 
-	</script>
+    </script>
 
-	<script type="x-shader/x-fragment" id="fragmentshader">
+    <script type="x-shader/x-fragment" id="fragmentshader">
 
-		uniform vec3 color;
-		uniform float alpha; // set same transparency for all points
-		uniform sampler2D texture;
+        uniform vec3 color;
+        uniform float alpha; // set same transparency for all points
+        uniform sampler2D texture;
 
-		varying vec3 vColor;
+        varying vec3 vColor;
 
-		void main() {
-			
-			gl_FragColor = vec4( 1.0 * color * vColor, alpha );
-			gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
-			
-		}
+        void main() {
+            
+            gl_FragColor = vec4( 1.0 * color * vColor, alpha );
+            gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+            
+        }
 
-	</script>
-		
+    </script>
+        
 </head>
 
-	<body>
-		
-		<!-- Empty left panel (controls event listeners) -->
-		<div id="empty"></div>
-	
-		<!-- Left panel (3D display) -->
-		<div id="container"></div>
-			
-			<!-- Colorbar -->
-			<div id="colorbar"></div>
-			
-		</div>
-		
-		<!-- Right panel (menu) -->
-		<div id="panel_right">
-				
-			<div id="header">
-			
-				<object type="image/svg+xml" data="resources/images/logo_v2.svg" width="100%">Your browser does not support SVG</object>
+    <body>
+        
+        <!-- Empty left panel (controls event listeners) -->
+        <div id="empty"></div>
+    
+        <!-- Left panel (3D display) -->
+        <div id="container"></div>
+            
+            <!-- Colorbar -->
+            <div id="colorbar"></div>
+            
+        </div>
+        
+        <!-- Right panel (menu) -->
+        <div id="panel_right">
+                
+            <div id="header">
+            
+                <object type="image/svg+xml" data="resources/images/logo_v2.svg" width="100%">Your browser does not support SVG</object>
 
-			</div>
-			
-			<!-- Accordion group -->
-			<div class="panel-group" id="accordion">
-			  
-			  <!-- Overlay -->
-			  <div class="panel panel-default">
-				<div class="panel-heading">
-				  <h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion" href="#upload">
-					  <span class="glyphicon glyphicon-open"></span> Point cloud loader
-					</a>
-				  </h4>
-				</div>
-				<div id="upload" class="panel-collapse collapse in">
-				  <div class="panel-body">
-				  
-				    <!-- File browser -->
-					<span style="display: inline;">
+            </div>
+            
+            <!-- Accordion group -->
+            <div class="panel-group" id="accordion">
+              
+              <!-- Overlay -->
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#upload">
+                      <span class="glyphicon glyphicon-open"></span> Point cloud loader
+                    </a>
+                  </h4>
+                </div>
+                <div id="upload" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                  
+                    <!-- File browser -->
+                    <span style="display: inline;">
 
-						<input type="file" id="files" name="file" style="width:60%;display: inline;">
-						<button type="submit" class="btn btn-default" onclick="abortRead();" style="display: inline; margin-bottom: 5px;"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
-					
-					</span>
-					
-					<div class="progress">
-					  <div id ="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" >
-						0%
-					  </div>
-					</div>
-					
-					<span class="help-block">Upload a <em>las</em> or <em>csv</em> file. Check the <a href="#help" data-toggle="modal" data-target="#HelpModal">Help</a> section for explanations on the supported format syntax.</span>
-					
-				  </div>
-				</div>
-			  </div>
-			
-			  <!-- Metadata -->
-			  <div class="panel panel-default">
-				<div class="panel-heading">
-				  <h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion" href="#metadata">
-					  <span class="glyphicon glyphicon-info-sign"></span> Metadata
-					</a>
-				  </h4>
-				</div>
-				<div id="metadata" class="panel-collapse collapse">
-				  <div class="panel-body">
+                        <input type="file" id="files" name="file" style="width:60%;display: inline;">
+                        <button type="submit" class="btn btn-default" onclick="abortRead();" style="display: inline; margin-bottom: 5px;"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                    
+                    </span>
+                    
+                    <div class="progress">
+                      <div id ="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" >
+                        0%
+                      </div>
+                    </div>
+                    
+                    <span class="help-block">Upload a <em>las</em> or <em>csv</em> file. Check the <a href="#help" data-toggle="modal" data-target="#HelpModal">Help</a> section for explanations on the supported format syntax.</span>
+                    
+                  </div>
+                </div>
+              </div>
+            
+              <!-- Metadata -->
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#metadata">
+                      <span class="glyphicon glyphicon-info-sign"></span> Metadata
+                    </a>
+                  </h4>
+                </div>
+                <div id="metadata" class="panel-collapse collapse">
+                  <div class="panel-body">
 
-					<table id="metadata_table" class="table">
-					<tr><td>File:</td><td><div id="metadata_filename">-</div></td></tr>
-					<tr><td>Last modified:</td><td><div id="metadata_date_modification">-</div></td></tr>
-					<tr><td>Number of points:</td><td> <div id="metadata_npoints">-</div></td></tr>
-					<tr><td>X extent:</td><td><div id="metadata_xextent">-</div></td></tr>
-					<tr><td>Y extent:</td><td><div id="metadata_yextent">-</div></td></tr>
-					<tr><td>Z extent:</td><td><div id="metadata_zextent">-</div></td></tr>
-					<tr><td>Generating Software:</td><td><div id="metadata_software">-</div></td></tr>
-					<tr><td>SRID:</td><td><div id="metadata_srid">-</div></td></tr>
-					<tr><td>SRS:</td><td><div id="metadata_srs">-</div></td></tr>
-					</table>
-					
-				  </div>
-				</div>
-			  </div>
-			  <div class="panel panel-default">
-				<div class="panel-heading">
-				  <h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion" href="#display">
-					  <span class="glyphicon glyphicon-check"></span> Display and controls
-					</a>
-				  </h4>
-				</div>
-				<div id="display" class="panel-collapse collapse">
-				  <div class="panel-body">
-				  
+                    <table id="metadata_table" class="table">
+                    <tr><td>File:</td><td><div id="metadata_filename">-</div></td></tr>
+                    <tr><td>Last modified:</td><td><div id="metadata_date_modification">-</div></td></tr>
+                    <tr><td>Number of points:</td><td> <div id="metadata_npoints">-</div></td></tr>
+                    <tr><td>X extent:</td><td><div id="metadata_xextent">-</div></td></tr>
+                    <tr><td>Y extent:</td><td><div id="metadata_yextent">-</div></td></tr>
+                    <tr><td>Z extent:</td><td><div id="metadata_zextent">-</div></td></tr>
+                    <tr><td>Generating Software:</td><td><div id="metadata_software">-</div></td></tr>
+                    <tr><td>SRID:</td><td><div id="metadata_srid">-</div></td></tr>
+                    <tr><td>SRS:</td><td><div id="metadata_srs">-</div></td></tr>
+                    </table>
+                    
+                  </div>
+                </div>
+              </div>
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#display">
+                      <span class="glyphicon glyphicon-check"></span> Display and controls
+                    </a>
+                  </h4>
+                </div>
+                <div id="display" class="panel-collapse collapse">
+                  <div class="panel-body">
+                  
 
-					<!-- View controller -->
-					<div class="form-group">
-					  <label class="form-label" for="viewController">View controller:</label>
-					  <div id="viewController" class="controls">
-						<label class="radio" for="viewController-0">
-						  <input type="radio" name="viewController" id="viewController-0" value="Trackball" onclick='updateViewController("Trackball")' checked="checked">
-						  Trackball
-						</label>
-						<label class="radio" for="viewController-1">
-						  <input type="radio" name="viewController" id="viewController-1" value="Fly" onclick='updateViewController("Fly")'>
-						  Fly
-						</label>
-					  </div>
-					</div>
+                    <!-- View controller -->
+                    <div class="form-group">
+                      <label class="form-label" for="viewController">View controller:</label>
+                      <div id="viewController" class="controls">
+                        <label class="radio" for="viewController-0">
+                          <input type="radio" name="viewController" id="viewController-0" value="Trackball" onclick='updateViewController("Trackball")' checked="checked">
+                          Trackball
+                        </label>
+                        <label class="radio" for="viewController-1">
+                          <input type="radio" name="viewController" id="viewController-1" value="Fly" onclick='updateViewController("Fly")'>
+                          Fly
+                        </label>
+                      </div>
+                    </div>
 
-					<!-- Point coloring -->
-					<div class="form-group">
-					  <label class="form-label" for="colorPointsBy">Color points by:</label>
-					  <div class="controls">
-						<select id="colorPointsBy" name="colorPointsBy" class="form-control">
-						  <option value="RGB">RGB</option>
-						  <option selected="selected" value="Elevation">Elevation </option>
-						  <option value="Classification">Classification</option>
-						  <option value="Intensity">Intensity</option>
-						  <option value="ReturnNumber">Return Number</option>
-						  <option value="FlightLineEdge">Edge of flight line flag</option>
-						  <!--<option value="Point Source ID">Point Source ID</option>-->
-						  <option value="None">None</option>
-						</select>
-					  </div>
-					</div>
-					
-					<!-- Point size scaling -->
-					<div class="form-group">
-						<label class="form-label" for="scalePoints">Adjust point scale:</label>
-						<input type="number" name="scalePoints" class="form-control" id="scalePoints" placeholder="1" min="0.5" max="10" step="0.1" value="1">
-					</div>
-					
-					<!-- Point alpha -->
-					<div class="form-group">
-						<label class="form-label" for="alphaPoints">Adjust point transparency:</label>
-						<input type="number" name="alphaPoints" class="form-control" id="alphaPoints" placeholder="0.8" min="0" max="1" step="0.1" value="0.8">
-					</div>
-					
-					<!-- Guidelines display -->
-					<div class="form-group">
-					<label class="form-label" for="helper_overlay">Display Guidelines:</label>
-						<div class="controls">
-						
-							<div class="checkbox">
-							<label>
-							  <input type="checkbox" onClick='updateAxisDisplay()' checked='checked' name="axis_display" id="axis_display" value="1">
-							  <font color="red">X</font><font color="green">Y</font><font color="blue">Z</font> axis
-							</label>
-							</div>
-							<div class="checkbox">
-							<label>
-							  <input type="checkbox" onClick='updateBoxDisplay()' checked='checked' name="bbox_display" id="bbox_display" value="1">
-							  Bounding box
-							</label>
-							</div>
-						</div>
-					</div>	
-				  </div>
-				</div>
-			  </div>
-			  
-			  <!-- Overlay -->
-			  <div class="panel panel-default">
-				<div class="panel-heading">
-				  <h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion" href="#overlay">
-					  <span class="glyphicon glyphicon-map-marker"></span> Overlay
-					</a>
-				  </h4>
-				</div>
-				<div id="overlay" class="panel-collapse collapse">
-				  <div class="panel-body">
-				  
-					<!-- Content -->
-					
-				  </div>
-				</div>
-			  </div>
-			  <!-- Map -->
-			  <div class="panel panel-default" id = "map_panel">
-				<div class="panel-heading">
-				  <h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion" href="#map">
-					  <span class="glyphicon glyphicon-globe"></span> Map
-					</a>
-				  </h4>
-				</div>
-				<div id="map" class="panel-collapse collapse">
-				  <div id="minimap" style="height:400px; width:100%" class="panel-body"> <!--class="panel-body"-->
-					<p><span class="glyphicon glyphicon-warning-sign"></span> no map available (SRS was not defined)</p>					
-				  </div>
-				</div>
-			  </div>
-			  
-			  <!-- Download -->
-			  <div class="panel panel-default" id = "download_panel">
-				<div class="panel-heading">
-				  <h4 class="panel-title">
-					<a data-toggle="collapse" data-parent="#accordion" href="#download">
-					  <span class="glyphicon glyphicon-save"></span> Download
-					</a>
-				  </h4>
-				</div>
-				<div id="download" class="panel-collapse collapse">
-				  <div id="downloads" class="panel-body">
-					<p><span class="glyphicon glyphicon-warning-sign"></span> no download available (SRS was not defined)</p>
-				  </div>	
-				</div>
-			  </div>
-			  
-			  <!-- Help -->
-			  <div class="panel panel-default" id = "help_panel">
-				<div class="panel-heading">
-				  <h4 class="panel-title">
-					<a data-toggle="modal" data-parent="#accordion" data-target="#HelpModal" href="#help" >
-					  <span class="glyphicon glyphicon-question-sign"></span> Help
-					</a>
-				  </h4>
-				</div>
-				<div id="help" class="panel-collapse collapse"></div>
-			  </div>
-				  
-			</div>
-			
-			<!-- Modal help menu -->
-			<div class="modal fade" id="HelpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			  <div class="modal-dialog">
-				<div class="modal-content">
-				  <div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title"><span class="glyphicon glyphicon-question-sign"></span> Help</h4>
-				  </div>
-				  <div class="modal-body">
-					<h4>About</h4>
-						PointScope was developed at the <a href="http://lasig.epfl.ch/">Geographic Information Systems Laboratory</a> of the Ecole Polytechnique Fédérale de Lausanne. This work was sponsored by the Swiss Forestry and Wood Research Fund.  
-					<hr>
-						
-					<h4>Supported point cloud formats</h4>
-					<p>
-						PointScope can read the <em>las 1.2</em> and <em>csv</em> formats. The <em>las 1.2</em> specification is described in this document: 
-						<ul>
-							<li><a href="http://www.asprs.org/a/society/committees/standards/asprs_las_format_v12.pdf">ASPRS LAS format version 1.2</a></li>
-						</ul>
-						
-						The <em>csv</em> format must be comma (,) delimited and include a header with the following syntax to describe column contents:
-						
-						<p>
-						<dl class="dl-horizontal">
-						  <dt>x</dt>
-						  <dd>x coordinate*</dd>
-						  <dt>y</dt>
-						  <dd>y coordinate*</dd>
-						  <dt>z</dt>
-						  <dd>z coordinate*</dd>
-						  <dt>i</dt>
-						  <dd>intensity</dd>
-						  <dt>c</dt>
-						  <dd>classification</dd>
-						  <dt>a</dt>
-						  <dd>scan angle</dd>
-						  <dt>n</dt>
-						  <dd>number of returns for given pulse</dd>
-						  <dt>r</dt>
-						  <dd>number of this return</dd>
-						  <dt>u</dt>
-						  <dd>user data</dd>
-						  <dt>p</dt>
-						  <dd>point source ID</dd>
-						  <dt>e</dt>
-						  <dd>edge of flight line flag</dd>
-						  <dt>d</dt>
-						  <dd>direction of scan flag</dd>
-						  <dt>R</dt>
-						  <dd>red channel of RGB color</dd>
-						  <dt>G</dt>
-						  <dd>green channel of RGB color</dd>
-						  <dt>B</dt>
-						  <dd>blue channel of RGB color</dd>
-						</dl>
-						</p>
-					
-					Note that the field order is not important but fields marked with an * are mandatory. Below is an example of a correctly formatted file:<br>
-						<p>
-						<dl class="dl-horizontal">
-						<dt>header</dt>
-						<dd>x,y,z,c</dd>
-						<dt></dt>
-						<dd>552196.14,200849.13,634.49,5</dd>
-						<dt></dt>
-						<dd>552196.36,200848.62,634.57,5</dd>
-						<dt></dt>
-						<dd>552197.12,200848.40,634.33,5</dd>
-						<dt></dt>
-						<dd>...</dd>
-						</dl>
-						</p>
-						
-					The color scheme used to represent point classification is based on <em>ASPRS las 1.2 Standard LiDAR Point Classes</em>:<br>
-						<p>
-						<dl class="dl-horizontal">
-						<dt>0</dt>
-						<dd>Created, never classified</dd>
-						<dt>1</dt>
-						<dd>Unclassified</dd>
-						<dt>2</dt>
-						<dd>Ground</dd>
-						<dt>3</dt>
-						<dd>Low Vegetation</dd>
-						<dt>4</dt>
-						<dd>Medium Vegetation</dd>
-						<dt>5</dt>
-						<dd>High Vegetation</dd>
-						<dt>6</dt>
-						<dd>Building</dd>
-						<dt>7</dt>
-						<dd>Low Point (noise)</dd>
-						<dt>8</dt>
-						<dd>Model Key-point (mass point)</dd>
-						<dt>9</dt>
-						<dd>Water</dd>
-						<dt>10</dt>
-						<dd>Reserved for ASPRS Definition</dd>
-						<dt>11</dt>
-						<dd>Reserved for ASPRS Definition</dd>
-						<dt>12</dt>
-						<dd>Overlap Points</dd>
-						<dt>13-255</dt>
-						<dd>Reserved for ASPRS Definition</dd>
-						</dl>
-						</p>	
-						
-					</p>
+                    <!-- Point coloring -->
+                    <div class="form-group">
+                      <label class="form-label" for="colorPointsBy">Color points by:</label>
+                      <div class="controls">
+                        <select id="colorPointsBy" name="colorPointsBy" class="form-control">
+                          <option value="RGB">RGB</option>
+                          <option selected="selected" value="Elevation">Elevation </option>
+                          <option value="Classification">Classification</option>
+                          <option value="Intensity">Intensity</option>
+                          <option value="ReturnNumber">Return Number</option>
+                          <option value="FlightLineEdge">Edge of flight line flag</option>
+                          <!--<option value="Point Source ID">Point Source ID</option>-->
+                          <option value="None">None</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <!-- Point size scaling -->
+                    <div class="form-group">
+                        <label class="form-label" for="scalePoints">Adjust point scale:</label>
+                        <input type="number" name="scalePoints" class="form-control" id="scalePoints" placeholder="1" min="0.5" max="10" step="0.1" value="1">
+                    </div>
+                    
+                    <!-- Point alpha -->
+                    <div class="form-group">
+                        <label class="form-label" for="alphaPoints">Adjust point transparency:</label>
+                        <input type="number" name="alphaPoints" class="form-control" id="alphaPoints" placeholder="0.8" min="0" max="1" step="0.1" value="0.8">
+                    </div>
+                    
+                    <!-- Guidelines display -->
+                    <div class="form-group">
+                    <label class="form-label" for="helper_overlay">Display Guidelines:</label>
+                        <div class="controls">
+                        
+                            <div class="checkbox">
+                            <label>
+                              <input type="checkbox" onClick='updateAxisDisplay()' checked='checked' name="axis_display" id="axis_display" value="1">
+                              <font color="red">X</font><font color="green">Y</font><font color="blue">Z</font> axis
+                            </label>
+                            </div>
+                            <div class="checkbox">
+                            <label>
+                              <input type="checkbox" onClick='updateBoxDisplay()' checked='checked' name="bbox_display" id="bbox_display" value="1">
+                              Bounding box
+                            </label>
+                            </div>
+                        </div>
+                    </div>    
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Overlay -->
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#overlay">
+                      <span class="glyphicon glyphicon-map-marker"></span> Overlay
+                    </a>
+                  </h4>
+                </div>
+                <div id="overlay" class="panel-collapse collapse">
+                  <div class="panel-body">
+                  
+                    <!-- Content -->
+                    
+                  </div>
+                </div>
+              </div>
+              <!-- Map -->
+              <div class="panel panel-default" id = "map_panel">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#map">
+                      <span class="glyphicon glyphicon-globe"></span> Map
+                    </a>
+                  </h4>
+                </div>
+                <div id="map" class="panel-collapse collapse">
+                  <div id="minimap" style="height:400px; width:100%" class="panel-body"> <!--class="panel-body"-->
+                    <p><span class="glyphicon glyphicon-warning-sign"></span> no map available (SRS was not defined)</p>                    
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Download -->
+              <div class="panel panel-default" id = "download_panel">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#download">
+                      <span class="glyphicon glyphicon-save"></span> Download
+                    </a>
+                  </h4>
+                </div>
+                <div id="download" class="panel-collapse collapse">
+                  <div id="downloads" class="panel-body">
+                    <p><span class="glyphicon glyphicon-warning-sign"></span> no download available (SRS was not defined)</p>
+                  </div>    
+                </div>
+              </div>
+              
+              <!-- Help -->
+              <div class="panel panel-default" id = "help_panel">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="modal" data-parent="#accordion" data-target="#HelpModal" href="#help" >
+                      <span class="glyphicon glyphicon-question-sign"></span> Help
+                    </a>
+                  </h4>
+                </div>
+                <div id="help" class="panel-collapse collapse"></div>
+              </div>
+                  
+            </div>
+            
+            <!-- Modal help menu -->
+            <div class="modal fade" id="HelpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-question-sign"></span> Help</h4>
+                  </div>
+                  <div class="modal-body">
+                    <h4>About</h4>
+                        PointScope was developed at the <a href="http://lasig.epfl.ch/">Geographic Information Systems Laboratory</a> of the Ecole Polytechnique Fédérale de Lausanne. This work was sponsored by the Swiss Forestry and Wood Research Fund.  
+                    <hr>
+                        
+                    <h4>Supported point cloud formats</h4>
+                    <p>
+                        PointScope can read the <em>las 1.2</em> and <em>csv</em> formats. The <em>las 1.2</em> specification is described in this document: 
+                        <ul>
+                            <li><a href="http://www.asprs.org/a/society/committees/standards/asprs_las_format_v12.pdf">ASPRS LAS format version 1.2</a></li>
+                        </ul>
+                        
+                        The <em>csv</em> format must be comma (,) delimited and include a header with the following syntax to describe column contents:
+                        
+                        <p>
+                        <dl class="dl-horizontal">
+                          <dt>x</dt>
+                          <dd>x coordinate*</dd>
+                          <dt>y</dt>
+                          <dd>y coordinate*</dd>
+                          <dt>z</dt>
+                          <dd>z coordinate*</dd>
+                          <dt>i</dt>
+                          <dd>intensity</dd>
+                          <dt>c</dt>
+                          <dd>classification</dd>
+                          <dt>a</dt>
+                          <dd>scan angle</dd>
+                          <dt>n</dt>
+                          <dd>number of returns for given pulse</dd>
+                          <dt>r</dt>
+                          <dd>number of this return</dd>
+                          <dt>u</dt>
+                          <dd>user data</dd>
+                          <dt>p</dt>
+                          <dd>point source ID</dd>
+                          <dt>e</dt>
+                          <dd>edge of flight line flag</dd>
+                          <dt>d</dt>
+                          <dd>direction of scan flag</dd>
+                          <dt>R</dt>
+                          <dd>red channel of RGB color</dd>
+                          <dt>G</dt>
+                          <dd>green channel of RGB color</dd>
+                          <dt>B</dt>
+                          <dd>blue channel of RGB color</dd>
+                        </dl>
+                        </p>
+                    
+                    Note that the field order is not important but fields marked with an * are mandatory. Below is an example of a correctly formatted file:<br>
+                        <p>
+                        <dl class="dl-horizontal">
+                        <dt>header</dt>
+                        <dd>x,y,z,c</dd>
+                        <dt></dt>
+                        <dd>552196.14,200849.13,634.49,5</dd>
+                        <dt></dt>
+                        <dd>552196.36,200848.62,634.57,5</dd>
+                        <dt></dt>
+                        <dd>552197.12,200848.40,634.33,5</dd>
+                        <dt></dt>
+                        <dd>...</dd>
+                        </dl>
+                        </p>
+                        
+                    The color scheme used to represent point classification is based on <em>ASPRS las 1.2 Standard LiDAR Point Classes</em>:<br>
+                        <p>
+                        <dl class="dl-horizontal">
+                        <dt>0</dt>
+                        <dd>Created, never classified</dd>
+                        <dt>1</dt>
+                        <dd>Unclassified</dd>
+                        <dt>2</dt>
+                        <dd>Ground</dd>
+                        <dt>3</dt>
+                        <dd>Low Vegetation</dd>
+                        <dt>4</dt>
+                        <dd>Medium Vegetation</dd>
+                        <dt>5</dt>
+                        <dd>High Vegetation</dd>
+                        <dt>6</dt>
+                        <dd>Building</dd>
+                        <dt>7</dt>
+                        <dd>Low Point (noise)</dd>
+                        <dt>8</dt>
+                        <dd>Model Key-point (mass point)</dd>
+                        <dt>9</dt>
+                        <dd>Water</dd>
+                        <dt>10</dt>
+                        <dd>Reserved for ASPRS Definition</dd>
+                        <dt>11</dt>
+                        <dd>Reserved for ASPRS Definition</dd>
+                        <dt>12</dt>
+                        <dd>Overlap Points</dd>
+                        <dt>13-255</dt>
+                        <dd>Reserved for ASPRS Definition</dd>
+                        </dl>
+                        </p>    
+                        
+                    </p>
 
-					<hr>
-					
-					<h4>View controls</h4>
-					<p>
-					In <em>fly</em> mode the view is controlled with:
-					<p>
-						<dl class="dl-horizontal">
-						<dt>move</dt>
-						<dd><kbd>W</kbd>-<kbd>A</kbd>-<kbd>S</kbd>-<kbd>D</kbd></dd>
-						<dt>pan up/down</dt>
-						<dd><kbd>R</kbd> / <kbd>F</kbd></dd>
-						<dt>roll left/right</dt>
-						<dd><kbd>Q</kbd> / <kbd>E</kbd></dd>
-						<dt>pitch nose up/down</dt>
-						<dd><kbd>↑</kbd> / <kbd>↓</kbd></dd>
-						<dt>yaw left/right</dt>
-						<dd><kbd>←</kbd> / <kbd>→</kbd></dd>
-						</dl>
-					</p>
-					
-					In <em>trackball</em> mode the view is controlled with:
-					<p>
-						<dl class="dl-horizontal">
-						<dt>move</dt>
-						<dd>left click and move mouse</dd>
-						<dt>zoom</dt>
-						<dd>scroll wheel</dd>
-						<dt>pan</dt>
-						<dd>right click and move mouse</dd>
-						</dl>
-					</p>
-					
-					
-					</p>
-					<hr>
-					
-					<h4>Supported overlay formats</h4>
-					<p>
-					Overlays can be added in the <a href="http://geojson.org/geojson-spec.html">geoJSON format</a>.
-					</p>
-					<hr>
-					
-					<h4>Spatial reference systems</h4>
-					
-					<p>
-					A spatial reference system (SRS) is required to display the minimap. The following links are helpful to get information about SRS:
-						<ul>
-							<li><a href="http://spatialreference.org/">spatialreference.org</a></li>
-							<li><a href="http://epsg.io/">epsg.io</a></li>
-						</ul>
-					</p>
-					<hr>
-					
-					<h4>Compatibility</h4>
-					<p>
-						PointScope has been tested on Chrome, Firefox 30.0 and Internet Explorer 11.
-					</p>
-					<hr>
-					
-					<h4>Source code and License</h4>
-					<p>
-						Pointscope uses <a href="http://threejs.org/"> ThreeJS</a>, <a href="http://leafletjs.com/"> Leaflet</a>,  <a href="http://proj4js.org/"> Proj4</a> and <a href="http://getbootstrap.com/"> Bootstrap</a>, the source code is available on GitHub: 
-					<ul>
-						<li><a href="http://github.com/mparkan">github.com/mparkan</a></li>
-					</ul>
-						It is licensed under GNU GPL.
-					</p>
-					
-					
-				  </div>
-				  <div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				  </div>
-				</div>
-			  </div>
-			</div>
-			
+                    <hr>
+                    
+                    <h4>View controls</h4>
+                    <p>
+                    In <em>fly</em> mode the view is controlled with:
+                    <p>
+                        <dl class="dl-horizontal">
+                        <dt>move</dt>
+                        <dd><kbd>W</kbd>-<kbd>A</kbd>-<kbd>S</kbd>-<kbd>D</kbd></dd>
+                        <dt>pan up/down</dt>
+                        <dd><kbd>R</kbd> / <kbd>F</kbd></dd>
+                        <dt>roll left/right</dt>
+                        <dd><kbd>Q</kbd> / <kbd>E</kbd></dd>
+                        <dt>pitch nose up/down</dt>
+                        <dd><kbd>↑</kbd> / <kbd>↓</kbd></dd>
+                        <dt>yaw left/right</dt>
+                        <dd><kbd>←</kbd> / <kbd>→</kbd></dd>
+                        </dl>
+                    </p>
+                    
+                    In <em>trackball</em> mode the view is controlled with:
+                    <p>
+                        <dl class="dl-horizontal">
+                        <dt>move</dt>
+                        <dd>left click and move mouse</dd>
+                        <dt>zoom</dt>
+                        <dd>scroll wheel</dd>
+                        <dt>pan</dt>
+                        <dd>right click and move mouse</dd>
+                        </dl>
+                    </p>
+                    
+                    
+                    </p>
+                    <hr>
+                    
+                    <h4>Supported overlay formats</h4>
+                    <p>
+                    Overlays can be added in the <a href="http://geojson.org/geojson-spec.html">geoJSON format</a>.
+                    </p>
+                    <hr>
+                    
+                    <h4>Spatial reference systems</h4>
+                    
+                    <p>
+                    A spatial reference system (SRS) is required to display the minimap. The following links are helpful to get information about SRS:
+                        <ul>
+                            <li><a href="http://spatialreference.org/">spatialreference.org</a></li>
+                            <li><a href="http://epsg.io/">epsg.io</a></li>
+                        </ul>
+                    </p>
+                    <hr>
+                    
+                    <h4>Compatibility</h4>
+                    <p>
+                        PointScope has been tested on Chrome, Firefox 30.0 and Internet Explorer 11.
+                    </p>
+                    <hr>
+                    
+                    <h4>Source code and License</h4>
+                    <p>
+                        Pointscope uses <a href="http://threejs.org/"> ThreeJS</a>, <a href="http://leafletjs.com/"> Leaflet</a>,  <a href="http://proj4js.org/"> Proj4</a> and <a href="http://getbootstrap.com/"> Bootstrap</a>, the source code is available on GitHub: 
+                    <ul>
+                        <li><a href="http://github.com/mparkan">github.com/mparkan</a></li>
+                    </ul>
+                        It is licensed under GNU GPL.
+                    </p>
+                    
+                    
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
 
-			<!-- Modal SRS menu -->
-			<div class="modal fade" id="SRSModal" tabindex="-1" role="dialog" aria-labelledby="SRSModal" aria-hidden="true">
-			  <div class="modal-dialog">
-				<div class="modal-content">
-				  <div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign"></span> Spatial Reference System is unspecified</h4>
-				  </div>
-				  <div class="modal-body">
-					<p>The point cloud you are loading doesn't appear to have a Spatial Reference System (SRS) associated with it.</p>
-						
-					  <div id="userInputSRS" class="form-group">
-						<label class="control-label" for="userSRS" id="userSRSLabel">Please indicate the SRS to use in this project:</label>
-						<input type="text" class="form-control" id="userSRS" placeholder="e.g. EPSG:21781">
-					  </div>
-					
-				  </div>
-				  <div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Omit SRS </button>
-					<button type="button" class="btn btn-primary" onClick='setSRS()' >Save SRS</button>
-				  </div>
-				</div>
-			  </div>
-			</div>
-		
-		<script>
-		
-		
-		var url = "http://spatialreference.org/ref/epsg/21781/ogcwkt/";
-		
-		var invocation = new XMLHttpRequest();
-		//var url = 'http://bar.other/resources/public-data/';
+            <!-- Modal SRS menu -->
+            <div class="modal fade" id="SRSModal" tabindex="-1" role="dialog" aria-labelledby="SRSModal" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title"><span class="glyphicon glyphicon-exclamation-sign"></span> Spatial Reference System is unspecified</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p>The point cloud you are loading doesn't appear to have a Spatial Reference System (SRS) associated with it.</p>
+                        
+                      <div id="userInputSRS" class="form-group">
+                        <label class="control-label" for="userSRS" id="userSRSLabel">Please indicate the SRS to use in this project:</label>
+                        <input type="text" class="form-control" id="userSRS" placeholder="e.g. EPSG:21781">
+                      </div>
+                    
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Omit SRS </button>
+                    <button type="button" class="btn btn-primary" onClick='setSRS()' >Save SRS</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+        <script>
+        
+        
+        var url = "http://spatialreference.org/ref/epsg/21781/ogcwkt/";
+        
+        var invocation = new XMLHttpRequest();
+        //var url = 'http://bar.other/resources/public-data/';
    
-		function callOtherDomain() {
-		  if(invocation) {    
-			invocation.open('GET', url, true);
-			invocation.onreadystatechange = handler;
-			invocation.send(); 
-		  }
-		}
-		
-		invocation.onload = function() {
-		 var responseText = xhr.responseText;
-		 console.log(responseText);
-		 // process the response.
-		};
+        function callOtherDomain() {
+          if(invocation) {    
+            invocation.open('GET', url, true);
+            invocation.onreadystatechange = handler;
+            invocation.send(); 
+          }
+        }
+        
+        invocation.onload = function() {
+         var responseText = xhr.responseText;
+         console.log(responseText);
+         // process the response.
+        };
 
-		//"http://www.datasciencetoolkit.org/coordinates2statistics/12%2c13?statistics=elevation&callback"; //
-		
-		/*
-		$(document).ready(function() {
-			$.get(HTML_FILE_URL, function(data) {
-				var fileDom = $(data);
-				console.log('fileDom');
-				console.log(fileDom);
-			}, "text");
-		})*/;
-		
+        //"http://www.datasciencetoolkit.org/coordinates2statistics/12%2c13?statistics=elevation&callback"; //
+        
+        /*
+        $(document).ready(function() {
+            $.get(HTML_FILE_URL, function(data) {
+                var fileDom = $(data);
+                console.log('fileDom');
+                console.log(fileDom);
+            }, "text");
+        })*/;
+        
 
-		
-		/*
-		function getOGCWKTproj(callback){
-			$.ajax({
-				url: HTML_FILE_URL,
-				dataType: 'jsonp', 
-				success: callback, 
-			}); 
-		}
-		
-		getOGCWKTproj(function(json) { 
-			console.log('json');
-			console.log(json);
-			//$('#elevation').html('<b>Approximate elevation ASL: </b>' + elevation);
-		});
-		*/
-		
-		// Using YQL and JSONP
-		/*
-		$.ajax({
-			url: HTML_FILE_URL,
-		 
-			// the name of the callback parameter, as specified by the YQL service
-			jsonp: "callback",
-		 
-			// tell jQuery we're expecting JSONP
-			dataType: "jsonp",
-		 
-			// tell YQL what we want and that we want JSON
-			data: null,
-		 
-			// work with the response
-			success: function( response ) {
-				console.log( response ); // server response
-			}
-		});
-		*/
+        
+        /*
+        function getOGCWKTproj(callback){
+            $.ajax({
+                url: HTML_FILE_URL,
+                dataType: 'jsonp', 
+                success: callback, 
+            }); 
+        }
+        
+        getOGCWKTproj(function(json) { 
+            console.log('json');
+            console.log(json);
+            //$('#elevation').html('<b>Approximate elevation ASL: </b>' + elevation);
+        });
+        */
+        
+        // Using YQL and JSONP
+        /*
+        $.ajax({
+            url: HTML_FILE_URL,
+         
+            // the name of the callback parameter, as specified by the YQL service
+            jsonp: "callback",
+         
+            // tell jQuery we're expecting JSONP
+            dataType: "jsonp",
+         
+            // tell YQL what we want and that we want JSON
+            data: null,
+         
+            // work with the response
+            success: function( response ) {
+                console.log( response ); // server response
+            }
+        });
+        */
 
-		/*
-		$.get( HTML_FILE_URL, function( data ) {
-		  $( ".result" ).html( data );
-		  alert( "Load was performed." );
-		});
-		*/
-		
-		$('.panel').on('shown.bs.collapse', function (e) {
-			
-			if (e.currentTarget.id === 'map_panel' && loadMinimap){
-				//alert('Event fired on #' + e.currentTarget.id);
-				printMap();
-				loadMinimap = false;
-				
-			}
-			
-		})
+        /*
+        $.get( HTML_FILE_URL, function( data ) {
+          $( ".result" ).html( data );
+          alert( "Load was performed." );
+        });
+        */
+        
+        $('.panel').on('shown.bs.collapse', function (e) {
+            
+            if (e.currentTarget.id === 'map_panel' && loadMinimap){
+                //alert('Event fired on #' + e.currentTarget.id);
+                printMap();
+                loadMinimap = false;
+                
+            }
+            
+        })
 
-		// initialize state flags
-		projFlag = false;
-		var resetFlag = false;
-		var initMapFlag = true;
-		loadMinimap = true;
-		
-		var reader;
-		var progress = document.querySelector('.percent');
-		
-		// add event listeners
-		document.getElementById('colorPointsBy').addEventListener('change', updatePointColors, false);
-		document.getElementById('scalePoints').addEventListener('change', updatePointScale, false);
-		document.getElementById('alphaPoints').addEventListener('change', updatePointAlpha, false);
-		document.getElementById('files').addEventListener('change', handleInput, false);
-		
-		</script>
+        // initialize state flags
+        projFlag = false;
+        var resetFlag = false;
+        var initMapFlag = true;
+        loadMinimap = true;
+        
+        var reader;
+        var progress = document.querySelector('.percent');
+        
+        // add event listeners
+        document.getElementById('colorPointsBy').addEventListener('change', updatePointColors, false);
+        document.getElementById('scalePoints').addEventListener('change', updatePointScale, false);
+        document.getElementById('alphaPoints').addEventListener('change', updatePointAlpha, false);
+        document.getElementById('files').addEventListener('change', handleInput, false);
+        
+        </script>
 
-	</body>
-	
+    </body>
+    
 </html>
