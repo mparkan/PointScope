@@ -49,37 +49,31 @@ toggle colorbar
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Ubuntu+Mono|Ubuntu:700' type='text/css'>
     <link rel="stylesheet" href="resources/css/pointscope.css" type='text/css'>
 
-    
-    <script type="text/javascript" src="vendors/jquery-2.1.0.min.js"></script>
-    <script type="text/javascript" src="vendors/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="vendors/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="vendors/bootstrap-3.1.1-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="vendors/proj4/dist/proj4.js"></script>
+<script type="text/javascript" src="vendors/leaflet/leaflet.js"></script>
+<script src="http://maps.google.com/maps/api/js?v=3&sensor=false"></script>
+<script type="text/javascript" src="vendors/leaflet-plugins-master/layer/tile/Google.js"></script>
 
-    <script type="text/javascript" src="vendors/proj4/dist/proj4.js"></script>
-    <script type="text/javascript" src="resources/js/prjdefs.js"></script>
-
-    <script type="text/javascript" src="vendors/leaflet/leaflet.js"></script>
-    <script src="http://maps.google.com/maps/api/js?v=3&sensor=false"></script>
-    <script type="text/javascript" src="vendors/leaflet-plugins-master/layer/tile/Google.js"></script>
-
-    <script type="text/javascript" src="resources/js/colormap.js"></script>
-    <script type="text/javascript" src="resources/js/interface.js"></script>
-    <script type="text/javascript" src="resources/js/readLAS.js"></script>
-    <script type="text/javascript" src="resources/js/readCSV.js"></script>
-    <script type="text/javascript" src="resources/js/render.js"></script>
-
-    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/build/three.min.js"></script>
-    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/TrackballControls.js"></script>
-    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/FlyControls.js"></script>
-    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/controls/FirstPersonControls.js"></script>
-    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/Detector.js"></script>
-    <script type="text/javascript" src="vendors/mrdoob-three.js-5db42dc/examples/js/TypedArrayUtils.js"></script>
-
+<script type="text/javascript" src="resources/js/pointscope.js"></script>
+<script type="text/javascript" src="resources/js/prjdefs.js"></script>
+<script type="text/javascript" src="resources/js/colormap.js"></script>
+<script type="text/javascript" src="resources/js/interface.js"></script>
+<script type="text/javascript" src="resources/js/network.js"></script>
+<script type="text/javascript" src="resources/js/readLAS.js"></script>
+<script type="text/javascript" src="resources/js/readCSV.js"></script>
+<script type="text/javascript" src="resources/js/render.js"></script>    
+<script type="text/javascript" src="vendors/three/build/three.js"></script>
+<script type="text/javascript" src="vendors/three/examples/js/Detector.js"></script>
+<script type="text/javascript" src="vendors/three/examples/js/controls/TrackballControls.js"></script>
+<script type="text/javascript" src="vendors/three/examples/js/controls/FlyControls.js"></script>
     <script type="x-shader/x-vertex" id="vertexshader">
 
         uniform float size; // set same size for all points
         
         attribute vec3 customColor;
         // attribute float size; // set size individually for each point
-        
         varying vec3 vColor;
         
         void main() {
@@ -100,9 +94,7 @@ toggle colorbar
             
             // set custom point size
             gl_PointSize = size;
-            
         }
-
     </script>
 
     <script type="x-shader/x-fragment" id="fragmentshader">
@@ -165,7 +157,7 @@ toggle colorbar
                     <span style="display: inline;">
 
                         <input type="file" id="files" name="file" style="width:60%;display: inline;">
-                        <button type="submit" class="btn btn-default" onclick="abortRead();" style="display: inline; margin-bottom: 5px;"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+                        <button type="submit" class="btn btn-default" onclick="PointScope.PsInterface.abortRead();" style="display: inline; margin-bottom: 5px;"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
                     
                     </span>
                     
@@ -225,11 +217,11 @@ toggle colorbar
                       <label class="form-label" for="viewController">View controller:</label>
                       <div id="viewController" class="controls">
                         <label class="radio" for="viewController-0">
-                          <input type="radio" name="viewController" id="viewController-0" value="Trackball" onclick='updateViewController("Trackball")' checked="checked">
+                          <input type="radio" name="viewController" id="viewController-0" value="Trackball" onclick='PointScope.Renderer.updateViewController("Trackball")' checked="checked">
                           Trackball
                         </label>
                         <label class="radio" for="viewController-1">
-                          <input type="radio" name="viewController" id="viewController-1" value="Fly" onclick='updateViewController("Fly")'>
+                          <input type="radio" name="viewController" id="viewController-1" value="Fly" onclick='PointScope.Renderer.updateViewController("Fly")'>
                           Fly
                         </label>
                       </div>
@@ -271,13 +263,13 @@ toggle colorbar
                         
                             <div class="checkbox">
                             <label>
-                              <input type="checkbox" onClick='updateAxisDisplay()' checked='checked' name="axis_display" id="axis_display" value="1">
+                              <input type="checkbox" onClick='PointScope.Renderer.updateAxisDisplay()' checked='checked' name="axis_display" id="axis_display" value="1">
                               <font color="red">X</font><font color="green">Y</font><font color="blue">Z</font> axis
                             </label>
                             </div>
                             <div class="checkbox">
                             <label>
-                              <input type="checkbox" onClick='updateBoxDisplay()' checked='checked' name="bbox_display" id="bbox_display" value="1">
+                              <input type="checkbox" onClick='PointScope.Renderer.updateBoxDisplay()' checked='checked' name="bbox_display" id="bbox_display" value="1">
                               Bounding box
                             </label>
                             </div>
@@ -556,7 +548,7 @@ toggle colorbar
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Omit SRS </button>
-                    <button type="button" class="btn btn-primary" onClick='setSRS()' >Save SRS</button>
+                    <button type="button" class="btn btn-primary" onClick='PointScope.Renderer.setSRS()' >Save SRS</button>
                   </div>
                 </div>
               </div>
@@ -565,108 +557,30 @@ toggle colorbar
         <script>
         
         
-        var url = "http://spatialreference.org/ref/epsg/21781/ogcwkt/";
-        
-        var invocation = new XMLHttpRequest();
-        //var url = 'http://bar.other/resources/public-data/';
-   
-        function callOtherDomain() {
-          if(invocation) {    
-            invocation.open('GET', url, true);
-            invocation.onreadystatechange = handler;
-            invocation.send(); 
-          }
-        }
-        
-        invocation.onload = function() {
-         var responseText = xhr.responseText;
-         console.log(responseText);
-         // process the response.
-        };
-
-        //"http://www.datasciencetoolkit.org/coordinates2statistics/12%2c13?statistics=elevation&callback"; //
-        
-        /*
-        $(document).ready(function() {
-            $.get(HTML_FILE_URL, function(data) {
-                var fileDom = $(data);
-                console.log('fileDom');
-                console.log(fileDom);
-            }, "text");
-        })*/;
-        
-
-        
-        /*
-        function getOGCWKTproj(callback){
-            $.ajax({
-                url: HTML_FILE_URL,
-                dataType: 'jsonp', 
-                success: callback, 
-            }); 
-        }
-        
-        getOGCWKTproj(function(json) { 
-            console.log('json');
-            console.log(json);
-            //$('#elevation').html('<b>Approximate elevation ASL: </b>' + elevation);
-        });
-        */
-        
-        // Using YQL and JSONP
-        /*
-        $.ajax({
-            url: HTML_FILE_URL,
-         
-            // the name of the callback parameter, as specified by the YQL service
-            jsonp: "callback",
-         
-            // tell jQuery we're expecting JSONP
-            dataType: "jsonp",
-         
-            // tell YQL what we want and that we want JSON
-            data: null,
-         
-            // work with the response
-            success: function( response ) {
-                console.log( response ); // server response
-            }
-        });
-        */
-
-        /*
-        $.get( HTML_FILE_URL, function( data ) {
-          $( ".result" ).html( data );
-          alert( "Load was performed." );
-        });
-        */
         
         $('.panel').on('shown.bs.collapse', function (e) {
             
-            if (e.currentTarget.id === 'map_panel' && loadMinimap){
-                //alert('Event fired on #' + e.currentTarget.id);
-                printMap();
-                loadMinimap = false;
-                
+            if (e.currentTarget.id === 'map_panel' && PointScope.PsInterface.loadMinimap){
+                PointScope.PsInterface.printMap();
+                PointScope.PsInterface.loadMinimap = false;
             }
-            
         })
 
         // initialize state flags
-        projFlag = false;
-        var resetFlag = false;
-        var initMapFlag = true;
-        loadMinimap = true;
-        
-        var reader;
-        var progress = document.querySelector('.percent');
-        
+        PointScope.PsInterface.projFlag = false;
+        PointScope.PsInterface.resetFlag = false;
+        PointScope.PsInterface.initMapFlag = true;
+        PointScope.PsInterface.loadMinimap = true;
+
+        //var reader;
+        PointScope.PsInterface.progress = document.querySelector('.percent');
+
         // add event listeners
-        document.getElementById('colorPointsBy').addEventListener('change', updatePointColors, false);
-        document.getElementById('scalePoints').addEventListener('change', updatePointScale, false);
-        document.getElementById('alphaPoints').addEventListener('change', updatePointAlpha, false);
-        document.getElementById('files').addEventListener('change', handleInput, false);
-        
+        document.getElementById('colorPointsBy').addEventListener('change', PointScope.Renderer.updatePointColors, false);
+        document.getElementById('scalePoints').addEventListener('change', PointScope.Renderer.updatePointScale, false);
+        document.getElementById('alphaPoints').addEventListener('change', PointScope.Renderer.updatePointAlpha, false);
+        document.getElementById('files').addEventListener('change', PointScope.PsInterface.handleInput, false);
+
         </script>
 
     </body>
