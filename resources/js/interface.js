@@ -363,9 +363,8 @@ PointScope.PsInterface.printMap = function() {
             });
 
             // add OSM baselayer
-            var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-            var osm = new L.TileLayer(osmUrl, {
+            var osm = new L.TileLayer(PointScope.Network.OsmUrl, {
                 maxZoom: 18,
                 attribution: "Map and data © <a href='http://www.openstreetmap.org'>OpenStreetMap</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/'>CC-BY-SA</a>"
                 });

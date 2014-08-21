@@ -27,7 +27,12 @@ if (typeof PointScope === "undefined") {
         /**
          * Colormaps for point symbology.
          */
-        Colormaps: {}
+        Colormaps: {},
+        
+        /**
+         * Network tools and variables.
+         */
+        Network: {}
 
     };
 
