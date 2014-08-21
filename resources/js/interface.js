@@ -7,6 +7,15 @@
 *
 */
 
+
+/**
+ * method to load point clouds at application startub
+ * @param bool loadPointCloud 
+ */
+PointScope.PsInterface.loadCloud = function(loadPointCloud) {
+    alert("toto");
+}
+
 // Point collection object
 PointScope.PsInterface.PointCollection = function () {
     // attributes
@@ -160,9 +169,9 @@ PointScope.PsInterface.handleFileSelect = function(evt) {
     // set progress bar to 0%
     PointScope.PsInterface.reader.onloadstart = function(e) {
 
-    //document.getElementById('progress_bar').className = 'loading';
-    document.getElementById('progressBar').style.width = '0%';
-    document.getElementById('progressBar').innerHTML = '0%';
+        //document.getElementById('progress_bar').className = 'loading';
+        document.getElementById('progressBar').style.width = '0%';
+        document.getElementById('progressBar').innerHTML = '0%';
 
     };
 
