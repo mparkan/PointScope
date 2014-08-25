@@ -8,22 +8,19 @@ PointScope.Readers.initPotree = function () {
     PointScope.PsInterface.PointCollection = new PointScope.PsInterface.PsPointCollection();
 
     // Potree variables
-    var defaultPointSize = 0.03;
-    var defaultLOD = 15;
-    var pointcloudPath = "http://localhost/sitn3d/lib/PointScope/vendors/potree/resources/pointclouds/lion_takanawa/cloud.js";
+    var defaultPointSize = 5;
+    var defaultLOD = 2;
     var pointclouds = [];
-    
-    
-    
+
     PointScope.PsInterface.resetThree();
-    
+
     // load texture
     var image = document.createElement( 'img' );
     // light and large points
     image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAABmgAAAZoBeoMgkgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAF+SURBVFiFzZe9TgJBFIU/JhGooTP+sIW+gZWNvAGJL8Mr0Fhjb2tiaSjAxieAShNYTTA00CvFsdgZJUjY2cDueJJpdnbvd3Znc+dMSRKeqgDXwBVwAtSAup2bAwvgHXgC7oFPr6qS0kYk6VZSLH9N7DNRWv1tk1VJN5JmGcDrmtka1awGjiX1dwCvq29rehm4kDTaI9xpZGtvNXAkaZgD3GloGRsNVCT1coQ79Szrj4FOAXCnjuOWlPSBBvAMHPo2hR31AVwCsbEX2gXCsaw2QElSGXgBTgs0APAGnBugFQCOZbYM0AwAd2oaIApoIDIku1oo1Qy/W2oI1U36PfnKkISJUJobkiQTSgsDjAMaGBtgENDAoCTpAHglTCs+M8ASeCwYjmUu/812HAN3BcGxrBj4X5EseChdjeV5mBjKI5avfol9LkdPa2+eZsD9Ex1J0x3AU1vjZ82zGHCjIamr7IfTrn12a33XB3xUJsmPTZIUtel4PiFp7Q/Al0/Rb2X6IK6n1dgiAAAAAElFTkSuQmCC";
 
     PointScope.Renderer.texture = new THREE.Texture( image );
-    
+
     image.onload = function()  {
         PointScope.Renderer.texture.needsUpdate = true;
         PointScope.Renderer.render();
@@ -33,28 +30,24 @@ PointScope.Readers.initPotree = function () {
     PointScope.Renderer.renderer = new THREE.WebGLRenderer({ 
         antialias: false 
     });
-    
+
     PointScope.Renderer.renderer.setSize(document.getElementById("container").offsetWidth, window.innerHeight);
     PointScope.Renderer.container = document.getElementById('container');
     PointScope.Renderer.container.appendChild(PointScope.Renderer.renderer.domElement );
 
     // add camera
-    PointScope.Renderer.camera = new THREE.PerspectiveCamera( 60, document.getElementById("container").offsetWidth / window.innerHeight, 1, 10000 );
-    PointScope.Renderer.camera.position.z = 300;
-    
+    PointScope.Renderer.camera = new THREE.PerspectiveCamera(75, document.getElementById("container").offsetWidth / window.innerHeight, 0.1, 10000 );
+    PointScope.Renderer.camera.position.z = 5000;
+    PointScope.Renderer.camera.position.y = 0;
+    PointScope.Renderer.camera.position.x = 0;
+
+
     // add view controls
     PointScope.Renderer.clock = new THREE.Clock();
     PointScope.Renderer.updateViewController('Trackball');
-    
+
     // add scene
     PointScope.Renderer.scene = new THREE.Scene();
-
-    // render particles 
-    // PointScope.Renderer.num_particles = Math.round(1 * PointScope.PsInterface.pointCollection.computedMetadata['Number of point records']);
-    // console.log('N part: '  + PointScope.Renderer.num_particles);
-    
-    // check number of points
-    // PointScope.Renderer.splitCloud = Math.ceil(PointScope.Renderer.num_particles / 16777215);
 
     PointScope.Renderer.attributes = {
         alpha: { type: 'f', value: 1.0 }, // set individual point transparency
@@ -77,7 +70,8 @@ PointScope.Readers.initPotree = function () {
         transparent: true
     });
 
-    // // get Proj4 definition from SRID
+    // HARD CODE SRS as it will be ch1903 for long....
+    //get Proj4 definition from SRID
     // switch (PointScope.PsInterface.pointCollection.variableLengthHeader.GeoKeyDirectoryTag === null){
         // case true:
 
@@ -108,73 +102,42 @@ PointScope.Readers.initPotree = function () {
     // }
     
     // // translate the coordinates so that the point cloud is centered at 0,0,0
-    // var k = 0;
-    // var x_offset = PointScope.Renderer.geometry.boundingBox.min.x + boundingBoxSize.x/2;
-    // var y_offset = PointScope.Renderer.geometry.boundingBox.min.y + boundingBoxSize.y/2;
-    // var z_offset = PointScope.Renderer.geometry.boundingBox.min.z + boundingBoxSize.z/2;
-
-    // for ( var i = 0; i < PointScope.Renderer.num_particles; i++ ) {
-
-        // PointScope.Renderer.positions[k]     -= x_offset;
-        // PointScope.Renderer.positions[k + 1] -= y_offset;
-        // PointScope.Renderer.positions[k + 2] -= z_offset;
-        // k += 3;
-
-    // }
                 
 
     window.addEventListener( 'resize', PointScope.Renderer.onWindowResize, false );
-
-    // camera and controls
-    PointScope.Renderer.camera.position.z = 25;
-    PointScope.Renderer.camera.position.y = 10;
-    PointScope.Renderer.camera.position.x = 15;
+    
+    // Material
     PointScope.Readers.pointcloudMaterial = new THREE.PointCloudMaterial( { size: defaultPointSize, vertexColors: true } );
     
     // load pointcloud
-    var pco = POCLoader.load(pointcloudPath);
-    
-    // add axis
-    PointScope.Renderer.axes = new THREE.AxisHelper(Math.max(pco.boundingBox.size().x * 2, pco.boundingBox.size().y * 2, pco.boundingBox.size().z * 2));
-    document.getElementById('axis_display').checked ? PointScope.Renderer.scene.add(PointScope.Renderer.axes) : PointScope.Renderer.scene.remove(PointScope.Renderer.axes);
-    
-    
-    // add the bounding box
-    var bounding_box_mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(pco.boundingBox.size().x, pco.boundingBox.size().y, pco.boundingBox.size().z),  
-        new THREE.MeshBasicMaterial({ color : 0xFFFF00})
-    );
+    var pco = POCLoader.load(PointScope.Readers.potreeCloudPath);
 
-    PointScope.Renderer.boxHelper = new THREE.BoxHelper( bounding_box_mesh );
-    document.getElementById('bbox_display').checked ? PointScope.Renderer.scene.add(PointScope.Renderer.boxHelper) : PointScope.Renderer.scene.remove(PointScope.Renderer.boxHelper);
+    pointCloud = new Potree.PointCloudOctree(pco, PointScope.Readers.pointcloudMaterial );
 
-    // Calculate metadata for Potree clouds
-    PointScope.Readers.setPotreeMedata(pco);
+    pointCloud.LOD = PointScope.Readers.potreeDefaultLOD;
+    // pointCloud.rotation.set(0,0,0);
 
-    var pointCloud = new Potree.PointCloudOctree(pco, PointScope.Renderer.shaderMaterial );
-
-    
-    console.log(pointCloud);
-    pointCloud.LOD = defaultLOD;
-    pointCloud.rotation.set(Math.PI,-1.2,0);
     pointCloud.moveToOrigin();
     pointCloud.moveToGroundPlane();
     PointScope.Renderer.scene.add(pointCloud);
-    
-    for(var i = -2; i <= 2; i++){
-        for(var j = -2; j <= 2; j++){
-            var pointcloud = new Potree.PointCloudOctree(pco, PointScope.Readers.pointcloudMaterial);
-            pointcloud.LOD = defaultLOD;
-            pointcloud.rotation.set(Math.PI/2, 0.85* -Math.PI/2, -0.0);
-            pointcloud.moveToOrigin();
-            pointcloud.moveToGroundPlane();
-            pointcloud.position.x += 8*i;
-            pointcloud.position.z += 8*j;
-            pointclouds.push(pointcloud);
-            PointScope.Renderer.scene.add(pointcloud);
-        }
-    }
+    pointclouds.push(pointCloud);
+    // Calculate metadata for Potree clouds
+    PointScope.Readers.setPotreeMedata(pointCloud);
+    // add axis
+    PointScope.Renderer.axes = new THREE.AxisHelper(Math.max(pointCloud.boundingBox.size().x/5, pointCloud.boundingBox.size().y/5 , pointCloud.boundingBox.size().z/5 ));
+    document.getElementById('axis_display').checked ? PointScope.Renderer.scene.add(PointScope.Renderer.axes) : PointScope.Renderer.scene.remove(PointScope.Renderer.axes);
 
+    // set clear color background
+    PointScope.Renderer.renderer.setClearColorHex( 0xEDEDED, 1 );  
+
+    // adapt controls
+    
+    PointScope.Renderer.controls.rotateSpeed = 1.2;
+    PointScope.Renderer.controls.zoomSpeed = 10;
+    PointScope.Renderer.controls.panSpeed = 3;
+    PointScope.Renderer.controls.dynamicDampingFactor = 0;
+
+    
     function render() {
    
         requestAnimationFrame(render);

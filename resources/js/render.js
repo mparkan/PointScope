@@ -424,7 +424,7 @@ PointScope.Renderer.updatePointScale = function() {
         document.getElementById('scalePoints').value <= 10.0 ? PointScope.Renderer.uniforms.size.value = document.getElementById('scalePoints').value : PointScope.Renderer.uniforms.size.value = 10.0;
         PointScope.Renderer.render();
     } else {
-        PointScope.Readers.pointcloudMaterial.size = document.getElementById('scalePoints').value / 50;
+        PointScope.Readers.pointcloudMaterial.size = document.getElementById('scalePoints').value;
     }
 
 };
