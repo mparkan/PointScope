@@ -11,8 +11,9 @@
 
 PointScope.Readers.readCSV = function (e) {
 
+    PointScope.Readers.tiledCloud = false;
     var csv = e.target.result;
-    var pointCollection = new PointCollection();
+    var pointCollection = new PointScope.PsInterface.PsPointCollection();
 
     var allTextLines = csv.split(/\r\n|\n/); // split text input by row
     console.log('number of entries:' + allTextLines.length);

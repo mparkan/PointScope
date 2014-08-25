@@ -126,54 +126,7 @@ PointScope.Renderer.setSRS = function () {
 
 PointScope.PsInterface.init = function () {
 
-    if (PointScope.PsInterface.resetFlag){
-
-        for ( var i = PointScope.Renderer.scene.children.length - 1; i >= 0 ; i -- ) {
-
-          var obj = scene.children[i];
-          scene.remove(obj);
-
-          if (obj.geometry) {                                                                          
-            obj.geometry.dispose();                                                                  
-          }
-          if (obj.material) {
-            obj.material.dispose();
-          }
-          if (obj.dispose) {
-            obj.dispose();
-          }
-          console.log(obj);
-
-          obj = undefined; 
-          delete(obj); // remove reference
-
-          console.log(obj);
-        }
-
-        texture.dispose();
-        texture = undefined;
-        delete(texture);
-
-        container.removeChild( renderer.domElement);
-
-        geometry.dispose();
-        geometry = undefined;
-        delete(obj);
-
-        shaderMaterial.dispose();
-        shaderMaterial = undefined;
-        delete(shaderMaterial);
-
-        PointScope.Renderer.renderer = undefined;
-        PointScope.Renderer.camera = undefined;
-        PointScope.Renderer.controls = undefined;
-        PointScope.Renderer.scene = undefined;
-        PointScope.Renderer.uniforms = undefined;
-        PointScope.Renderer.attributes = undefined;
-        PointScope.Renderer.positions = undefined;
-        PointScope.Renderer.colors = undefined;
-
-    }
+    PointScope.PsInterface.resetThree();
 
     // load texture
     var image = document.createElement( 'img' );
@@ -182,9 +135,9 @@ PointScope.PsInterface.init = function () {
     // dark and small points
     //image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sHDgwCEMBJZu0AAAAdaVRYdENvbW1lbnQAAAAAAENyZWF0ZWQgd2l0aCBHSU1QZC5lBwAABM5JREFUWMO1V0tPG2cUPZ4Hxh6DazIOrjFNqJs0FIMqWFgWQkatsmvVbtggKlSVRVf5AWz4AWz4AUSKEChll19QJYSXkECuhFxsHjEhxCYm+DWGMZ5HF72DJq4bAzFXurI0M/I5997v3u9cC65vTJVn2lX/xHINQOYSBLTLEuIuCWw4Z3IGAEvf6ASmVHjNzHCXBG4A0AjACsAOwEbO0nsFQBnAGYASAIl+ZRMR7SolMEdsByD09fV5R0ZGgg8ePPjW5/N1iqLYpuu6RZblciKR2I9Go69evnwZnZ+fjwI4IS8AKBIRzeQfJWCANwKwh0KhtrGxsYehUOin1tbW+zzP23ietzY2NnIAoGmaLsuyUiqVyvl8XtrY2NiamZn589mzZxsAUgCOAeQAnFI2tI+VxIjaAeDzoaGh7xYWFuZOTk6OZVk+12uYqqq6JEnn0Wg0OT4+/geAXwGEAdwDIFJQXC1wO4DWR48e/RCPxxclSSroVzRFUbSDg4P848ePFwH8DuAhkWih83TRQWxFOXgAwvDwcOfo6OhvXV1d39tsNtuVBwTDWBwOh1UUxVsMw1hXVlbSdCgNV43uYSvrHg6H24aHh38eHBz85TrgF9FYLHA4HLzH43FvbW2d7u/vG+dANp8FpqIlbd3d3V8Fg8EfBUFw4BONZVmL3+9vHhkZCQL4AoAHgJPK8G+yzC0XDofdoVAo5PP5vkadTBAEtr+/39ff3x8gAp/RPOEqx2qjx+NpvXv3bk9DQ0NDvQgwDIOWlhZrMBj8kgi0UJdxRgYMArzL5XJ7vd57qLPZ7Xamp6fnNgBXtQxcjFuHw+Hyer3t9SYgCAITCAScAJoBNNEY/08GOFVVrfVMv7kMNDntFD1vjIAPrlRN0xjckOm6biFQ3jwNPwDMZrOnqVTqfb3Bi8Wivru7W/VCYkwPlKOjo0IikXh7EwQikYgE4Nw0CfXKDCipVCoTj8df3QABbW1tLUc6oUgkFPMkVACUNjc337148eKvw8PDbJ2jP1taWkoCyNDVXDSECmNSK4qiKNLq6urW8+fPI/UicHx8rD59+jSVy+WOAKSJhKENwFItLtoxk8mwsixzHR0dHe3t7c5PAU+n09rs7OzJkydPYqVSaQfANoDXALIk31S2smU1TWMPDg7K5XKZ7+3t9TudTut1U7+wsFCcmJiIpdPpbQBxADsAknQWymYCOukBHYCuKApisdhpMpnURFEU79y503TVyKenpzOTk5M7e3t7MQKPV0Zv1gNm+awB0MvlshqLxfLb29uyJElWURSbXC4XXyvqxcXFs6mpqeTc3Nzu3t7e3wQcA7BPZ8Cov1pNlJplmQtAG8MwHV6v95tAINA5MDBwPxAIuLu6upr8fr/VAN3c3JQjkcjZ+vp6fnl5+d2bN29SuVzuNYAEpf01CdRChUL+X1VskHACuA3Ay3Fcu9vt7nA6nZ7m5uYWQRCaNE3jVVW15PP580KhIGUymWw2m00DOAJwSP4WwPtq4LX2Ao6USxNlQyS/RcQcdLGwlNIz6vEMAaZpNzCk2Pll94LK/cDYimxERiBwG10sxjgvEZBE0UpE6vxj+0Ct5bTaXthgEhRmja8QWNkkPGsuIpfdjpkK+cZUWTC0KredVmtD/gdlSl6EG4AMvQAAAABJRU5ErkJggg==";
 
-    var texture = new THREE.Texture( image );
+    PointScope.Renderer.texture = new THREE.Texture( image );
     image.onload = function()  {
-        texture.needsUpdate = true;
+        PointScope.Renderer.texture.needsUpdate = true;
         PointScope.Renderer.render();
     };
 
@@ -193,8 +146,8 @@ PointScope.PsInterface.init = function () {
         antialias: false 
     } );
     PointScope.Renderer.renderer.setSize(document.getElementById("container").offsetWidth, window.innerHeight);
-    var container = document.getElementById('container');
-    container.appendChild(PointScope.Renderer.renderer.domElement );
+    PointScope.Renderer.container = document.getElementById('container');
+    PointScope.Renderer.container.appendChild(PointScope.Renderer.renderer.domElement );
 
     // add camera
     PointScope.Renderer.camera = new THREE.PerspectiveCamera( 60, document.getElementById("container").offsetWidth / window.innerHeight, 1, 10000 );
@@ -221,7 +174,7 @@ PointScope.PsInterface.init = function () {
 
     PointScope.Renderer.uniforms = {
         color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-        texture:   { type: "t", value: texture },
+        texture:   { type: "t", value: PointScope.Renderer.texture },
         size:        { type: 'f', value: document.getElementById('scalePoints').value },
         alpha: { type: 'f', value: document.getElementById('alphaPoints').value }
     };
@@ -236,6 +189,8 @@ PointScope.PsInterface.init = function () {
     });
     
     // create data views
+    console.log("X: ");
+    console.log(PointScope.PsInterface.pointCollection.points.X);
     PointScope.Renderer.dv1 = new DataView(PointScope.PsInterface.pointCollection.points.X);
     PointScope.Renderer.dv2 = new DataView(PointScope.PsInterface.pointCollection.points.Y);
     PointScope.Renderer.dv3 = new DataView(PointScope.PsInterface.pointCollection.points.Z);
@@ -353,9 +308,9 @@ PointScope.PsInterface.init = function () {
     PointScope.Renderer.displayInfo = {
 
         'RGB' : {'colormapName' : 'none', 'discrete' : false, 'nColors' : 256 , 'valueRange' : undefined, 'legendText' : undefined},
-        'Elevation' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [PointScope.PsInterface.pointCollection.computedMetadata['Z min'], PointScope.PsInterface.pointCollection.computedMetadata['Z max']], 'legendText' : undefined},
-        'Intensity' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [PointScope.PsInterface.pointCollection.computedMetadata['Intensity min'], PointScope.PsInterface.pointCollection.computedMetadata['Intensity max']], 'legendText' : undefined},
-        'Classification' : {'colormapName' : 'classification', 'discrete' : true, 'nColors' : PointScope.PsInterface.pointCollection.computedMetadata['Unique classes'].length, 'valueRange' : PointScope.PsInterface.pointCollection.computedMetadata['Unique classes'], 'legendText' : 
+        'Elevation' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [PointScope.PsInterface.PointCollection.computedMetadata['Z min'], PointScope.PsInterface.PointCollection.computedMetadata['Z max']], 'legendText' : undefined},
+        'Intensity' : {'colormapName' : 'jet', 'discrete' : false, 'nColors' : 256, 'valueRange' : [PointScope.PsInterface.PointCollection.computedMetadata['Intensity min'], PointScope.PsInterface.PointCollection.computedMetadata['Intensity max']], 'legendText' : undefined},
+        'Classification' : {'colormapName' : 'classification', 'discrete' : true, 'nColors' : PointScope.PsInterface.PointCollection.computedMetadata['Unique classes'].length, 'valueRange' : PointScope.PsInterface.PointCollection.computedMetadata['Unique classes'], 'legendText' : 
         {'0' : '0', '1' : '1', '2' : '2', '3' : '3', '4' : '4', '5' : '5', '6' : '6', '7' : '7', '8' : '8', '9' : '9', '10' : '10', '11' : '11', '12' : '12', '13' : '13', '14' : '14', '15' : '15', '16' : '16', 
         '17' : '17', '18' : '18', '19' : '19', '20' : '20', '21' : '21', '22' : '22', '23' : '23', '24' : '24', '25' : '25', '26' : '26', '27' : '27', '28' : '28', '29' : '29', '30' : '30', '31' : '31'}},
         'ReturnNumber' : {'colormapName' : 'five', 'discrete' : true, 'nColors' : 5, 'valueRange' : [0, 1, 2, 3, 4], 'legendText' : {'0' : '1', '1' : '2', '2' : '3', '3' : '4', '4' : '5'}},
@@ -464,18 +419,22 @@ PointScope.Renderer.updateViewController = function(option) {
 
 PointScope.Renderer.updatePointScale = function() {
     
-    console.log('update point size');
-    document.getElementById('scalePoints').value <= 10.0 ? PointScope.Renderer.uniforms.size.value = document.getElementById('scalePoints').value : PointScope.Renderer.uniforms.size.value = 10.0;
-    PointScope.Renderer.render();
+    if (!PointScope.Readers.tiledCloud) {
+        console.log('update point size');
+        document.getElementById('scalePoints').value <= 10.0 ? PointScope.Renderer.uniforms.size.value = document.getElementById('scalePoints').value : PointScope.Renderer.uniforms.size.value = 10.0;
+        PointScope.Renderer.render();
+    } else {
+        PointScope.Readers.pointcloudMaterial.size = document.getElementById('scalePoints').value / 50;
+    }
 
 };
 
 PointScope.Renderer.updatePointAlpha = function() {
-    
+
     console.log('update point alpha');
     document.getElementById('alphaPoints').value <= 1.0 ? PointScope.Renderer.uniforms.alpha.value = document.getElementById('alphaPoints').value : PointScope.Renderer.uniforms.alpha.value = 1.0;
     PointScope.Renderer.render();
-    
+
 };
 
 PointScope.Renderer.updatePointColors = function(renderOn) {
