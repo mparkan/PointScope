@@ -17,12 +17,14 @@ PointScope.Readers.uintToString = function (uintArray) {
 // read the LAS 1.2 public header
 PointScope.Readers.readLAS = function (e) {
     
+    PointScope.Readers.tiledCloud = false;
+
     var arrayBuffer = e.target.result;
     console.log('arrayBuffer');
     var byteLength = arrayBuffer.byteLength;
     var view = new DataView(arrayBuffer);
     
-    var pointCollection = new PointScope.PsInterface.PointCollection();
+    var pointCollection = new PointScope.PsInterface.PsPointCollection();
 
     console.log(pointCollection);
     var current_offset = 0;

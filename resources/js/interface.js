@@ -13,11 +13,13 @@
  * @param bool loadPointCloud 
  */
 PointScope.PsInterface.loadCloud = function(loadPointCloud) {
-    alert("toto");
+    
+    PointScope.Readers.initPotree();
+    
 }
 
 // Point collection object
-PointScope.PsInterface.PointCollection = function () {
+PointScope.PsInterface.PsPointCollection = function () {
     // attributes
     this.publicHeader = {
         'File Signature (“LASF”)': null,
@@ -508,4 +510,61 @@ PointScope.PsInterface.sortNumeric = function(a, b) {
 
     return a - b;
 
+};
+
+/**
+ * method to reset all Three elements
+ */
+PointScope.PsInterface.resetThree = function() {
+    if (PointScope.PsInterface.resetFlag){
+
+        for ( var i = PointScope.Renderer.scene.children.length - 1; i >= 0 ; i -- ) {
+
+          var obj = PointScope.Renderer.scene.children[i];
+          PointScope.Renderer.scene.remove(obj);
+
+          if (obj.geometry) {                                                                          
+            obj.geometry.dispose();                                                                  
+          }
+          if (obj.material) {
+            obj.material.dispose();
+          }
+          if (obj.dispose) {
+            obj.dispose();
+          }
+          console.log(obj);
+
+          obj = undefined; 
+          delete(obj); // remove reference
+
+          console.log(obj);
+        }
+
+        PointScope.Renderer.texture.dispose();
+        PointScope.Renderer.texture = undefined;
+        delete(PointScope.Renderer.texture);
+
+        PointScope.Renderer.container.removeChild( PointScope.Renderer.renderer.domElement);
+
+        if (typeof geometry != 'undefined') {
+            geometry.dispose();
+            geometry = undefined;
+        };
+        
+        delete(obj);
+
+        PointScope.Renderer.shaderMaterial.dispose();
+        PointScope.Renderer.shaderMaterial = undefined;
+        delete(PointScope.Renderer.shaderMaterial);
+
+        PointScope.Renderer.renderer = undefined;
+        PointScope.Renderer.camera = undefined;
+        PointScope.Renderer.controls = undefined;
+        PointScope.Renderer.scene = undefined;
+        PointScope.Renderer.uniforms = undefined;
+        PointScope.Renderer.attributes = undefined;
+        PointScope.Renderer.positions = undefined;
+        PointScope.Renderer.colors = undefined;
+
+    }
 };
